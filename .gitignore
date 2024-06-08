@@ -1,0 +1,12 @@
+# .gitignore
+
+# Node.js
+/frontend/node_modules
+/frontend/build
+
+# Logs
+logs
+*.log
+
+# OS generated files
+.DS_Store
