@@ -4,17 +4,21 @@ import Navbar from './components/Navbar';
 import Home from './pages/Home';
 import Vote from './pages/Vote';
 
+import ThemeProvider from './ThemeContext';
+
 const App: React.FC = () => {
   return (
-    <Router>
-      <div className="App">
-        <Navbar />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/vote" element={<Vote />} />
-        </Routes>
-      </div>
-    </Router>
+    <ThemeProvider>
+      <Router>
+        <div className="App">
+          <Navbar />
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/vote" element={<Vote />} />
+          </Routes>
+        </div>
+      </Router>
+    </ThemeProvider>
   );
 }
 
