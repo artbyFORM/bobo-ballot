@@ -14,6 +14,7 @@ type Submission struct {
 	gorm.Model
 
 	ID              uint     `gorm:"type:integer;primaryKey;unique"`
+	Title           string   `gorm:"type:text"`
 	PrimaryAliases  []string `gorm:"type:text;not null"`
 	FeaturedAliases []string `gorm:"type:text"`
 	WaveURL         string   `gorm:"type:text"`
