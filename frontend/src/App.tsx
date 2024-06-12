@@ -1,18 +1,20 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
-import { Button } from '@mui/base';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import Navbar from './components/Navbar';
+import Home from './pages/Home';
+import Vote from './pages/Vote';
 
-function App() {
+const App: React.FC = () => {
   return (
-    <div className="App">
-      <h1 className="text-3xl font-bold underline">
-        Hello world!
-      </h1>
-      <Button color="primary">
-        Test MUI Button
-      </Button>
-    </div>
+    <Router>
+      <div className="App">
+        <Navbar />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/vote" element={<Vote />} />
+        </Routes>
+      </div>
+    </Router>
   );
 }
 
