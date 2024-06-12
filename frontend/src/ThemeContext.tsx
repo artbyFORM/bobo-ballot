@@ -29,6 +29,9 @@ const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) =>
       createTheme({
         palette: {
           mode: isDarkMode ? 'dark' : 'light',
+          primary: {
+            main: "#FFFFFF",
+          },
         },
       }),
     [isDarkMode]
