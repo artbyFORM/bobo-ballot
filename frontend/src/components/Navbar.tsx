@@ -21,20 +21,23 @@ const Navbar: React.FC = () => {
   const { toggleTheme, isDarkMode } = useTheme();
 
 return (
-    <AppBar position="static" elevation={0}>
-        <Toolbar className="bg-pink-500">
-            {/*<img src={'/logo50.png'} alt="" className="mr-3 size-8 drop-shadow-lg"/>*/}
-            <Link to="/" className={classes.link}>
-                <Button className="text-white">Home</Button>
-            </Link>
-            <Link to="/vote" className={classes.link}>
-                <Button className="text-white">Vote</Button>
-            </Link>
-            <IconButton onClick={toggleTheme}>
-                {isDarkMode ? <Brightness7Icon /> : <Brightness4Icon />}
-            </IconButton>
-        </Toolbar>
-    </AppBar>
+  <AppBar position="static" elevation={0}>
+    <Toolbar className={`bg-pink-500 justify-between`}>
+      <div className='flex'>
+        <img src={'/logo50.png'} alt="" className="mr-3 size-8 drop-shadow-lg"/>
+        <Link to="/" className={classes.link}>
+          <Button className="text-white">Home</Button>
+        </Link>
+        <Link to="/vote" className={classes.link}>
+          <Button className="text-white">Vote</Button>
+        </Link>
+      </div>
+      
+      <IconButton onClick={toggleTheme}>
+        {isDarkMode ? <Brightness4Icon style={{ color: 'white' }} /> : <Brightness7Icon style={{ color: 'white' }} />}
+      </IconButton>
+    </Toolbar>
+  </AppBar>
 );
 };
 

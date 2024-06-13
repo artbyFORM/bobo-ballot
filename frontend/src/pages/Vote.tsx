@@ -47,8 +47,8 @@ const Vote: React.FC = () => {
   return (
       <div className='p-10'>
           <div className="flex justify-between items-center p-15 w-full h-full">
-              <IconButton className="btn ml-10" onClick={() => changeRow(row - 1)} disabled={row === 1}><ArrowBackIcon/></IconButton>
-              <IconButton className="btn mr-10" onClick={() => changeRow(row + 1)} disabled={row === totalRows}><ArrowForwardIcon/></IconButton>
+              <IconButton className="size-5 ml-10" onClick={() => changeRow(row - 1)} disabled={row === 1}><ArrowBackIcon/></IconButton>
+              <IconButton className="size-5 mr-10" onClick={() => changeRow(row + 1)} disabled={row === totalRows}><ArrowForwardIcon/></IconButton>
           </div>
 
           <div className="flex justify-center items-center p-15 w-full h-full">
