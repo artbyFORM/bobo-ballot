@@ -22,15 +22,15 @@ const Navbar: React.FC = () => {
 
 return (
     <AppBar position="static" elevation={0}>
-        <Toolbar>
-            <img src={'/logo50.png'} alt="" className="mr-3 size-8 drop-shadow-sm"/>
+        <Toolbar className="bg-pink-500">
+            {/*<img src={'/logo50.png'} alt="" className="mr-3 size-8 drop-shadow-lg"/>*/}
             <Link to="/" className={classes.link}>
-                <Button color="inherit" className="text-white">Home</Button>
+                <Button className="text-white">Home</Button>
             </Link>
             <Link to="/vote" className={classes.link}>
-                <Button color="inherit" className="text-white">Vote</Button>
+                <Button className="text-white">Vote</Button>
             </Link>
-            <IconButton color="inherit" onClick={toggleTheme}>
+            <IconButton onClick={toggleTheme}>
                 {isDarkMode ? <Brightness7Icon /> : <Brightness4Icon />}
             </IconButton>
         </Toolbar>
