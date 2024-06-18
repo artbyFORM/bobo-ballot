@@ -1,6 +1,7 @@
 import IconButton from '@mui/material/IconButton';
 import React from 'react';
 import { useEffect, useState } from 'react';
+import Waveform from '../components/Waveform';
 
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
@@ -12,6 +13,8 @@ const Vote: React.FC = () => {
   const totalRows = 12; //hard coded for now
 
   const [vote, setVote] = useState<number>(1);
+
+  const [trackURL, setTrackURL] = useState("https://ia601208.us.archive.org/33/items/SKRILLEXBangarangFeat.SirahOfficialMusicVideo_201509/SKRILLEX%20-%20Bangarang%20feat.%20Sirah%20%5BOfficial%20Music%20Video%5D.mp3");
 
   // handle keyboard input
   useEffect(() => {
@@ -53,13 +56,15 @@ const Vote: React.FC = () => {
           <div className="flex justify-between items-center p-15 w-full h-full">
               <IconButton className="size-5 ml-10" onClick={() => changeRow(row - 1)} disabled={row === 1}><ArrowBackIcon/></IconButton>
               <div className="flex justify-center items-center p-15 w-full h-full">
-              <div className="flex flex-col items-center p-15 space-y-15">
+              <div className="flex flex-col items-center space-y-15">
                   <h1 className="text-xl font-bold" >{`${row}/${totalRows}`}</h1>
                   {/*TODO: fix placeholder text*/}
                   {/*TODO: dynamically size font to fit*/}
-                  {row ? <h1 className="text-4xl font-extrabold pt-5 pb-5">{"The Devil's Den"}</h1> : "..."}
-                  {row ? <h1 className="text-4xl font-light pb-5">{"Skrillex & Wolfgang Gartner"}</h1> : "..."}
-                  <div className="w-10 h-50"/>
+                  {row ? <h1 className="text-4xl font-extrabold pt-5 pb-5">{"Bangarang (feat. Sirah)"}</h1> : "..."}
+                  {row ? <h1 className="text-4xl font-light pb-5">{"Skrillex"}</h1> : "..."}
+                  <div className="w-900 h-200 pt-5 pb-10">
+                    <Waveform url={trackURL}/>
+                  </div>
                   <div className="flex pb-5">
                       {validVoteKeys.map((key) => (
                             <button className={`rounded-full text-4xl size-24 px-5 mr-10 ${vote === Number(key) ? 'bg-pink-500 text-white' : 'bg-slate-100 text-black'}`} onClick={() => submitVote(Number(key))}>{key}</button>
