@@ -52,10 +52,7 @@ const Vote: React.FC = () => {
       <div className='p-10'>
           <div className="flex justify-between items-center p-15 w-full h-full">
               <IconButton className="size-5 ml-10" onClick={() => changeRow(row - 1)} disabled={row === 1}><ArrowBackIcon/></IconButton>
-              <IconButton className="size-5 mr-10" onClick={() => changeRow(row + 1)} disabled={row === totalRows}><ArrowForwardIcon/></IconButton>
-          </div>
-
-          <div className="flex justify-center items-center p-15 w-full h-full">
+              <div className="flex justify-center items-center p-15 w-full h-full">
               <div className="flex flex-col items-center p-15 space-y-15">
                   <p>{`${row}/${totalRows}`}</p>
                   {/*TODO: fix placeholder text*/}
@@ -69,6 +66,8 @@ const Vote: React.FC = () => {
                       ))}
                   </div>
               </div>
+          </div>
+              <IconButton className="size-5 mr-10" onClick={() => changeRow(row + 1)} disabled={row === totalRows}><ArrowForwardIcon/></IconButton>
           </div>
       </div>
   );
