@@ -54,7 +54,7 @@ const Vote: React.FC = () => {
               <IconButton className="size-5 ml-10" onClick={() => changeRow(row - 1)} disabled={row === 1}><ArrowBackIcon/></IconButton>
               <div className="flex justify-center items-center p-15 w-full h-full">
               <div className="flex flex-col items-center p-15 space-y-15">
-                  <p>{`${row}/${totalRows}`}</p>
+                  <h1 className="text-xl font-bold" >{`${row}/${totalRows}`}</h1>
                   {/*TODO: fix placeholder text*/}
                   {/*TODO: dynamically size font to fit*/}
                   {row ? <h1 className="text-4xl font-extrabold pt-5 pb-5">{"The Devil's Den"}</h1> : "..."}
