@@ -20,37 +20,55 @@ const formWaveSurferOptions = ref => ({
 export default function Waveform({ url }) {
     const waveformRef = useRef(null);
     const wavesurfer = useRef(null);
-    const [playing, setPlay] = useState(false);
+    const [playing, setPlaying] = useState(false);
     const [volume, setVolume] = useState(0.5);
 
     useEffect(() => {
-        setPlay(false);
+        const setupWaveSurfer = async () => {
+            if (!wavesurfer.current) {
+                const options = formWaveSurferOptions(waveformRef.current);
+                wavesurfer.current = WaveSurfer.create(options);
 
-        const options = formWaveSurferOptions(waveformRef.current);
-        wavesurfer.current = WaveSurfer.create(options);
-        wavesurfer.current.load(url);
-        wavesurfer.current.on("ready", function() {
-            if (wavesurfer.current) {
-                wavesurfer.current.setVolume(volume);
-                setVolume(volume);
+                wavesurfer.current.on("ready", () => {
+                    if (wavesurfer.current) {
+                        wavesurfer.current.setVolume(volume);
+                    }
+                });
+
+                wavesurfer.current.on("error", (error) => {
+                    console.error("WaveSurfer error:", error);
+                });
             }
-        });
-        
-        return () => wavesurfer.current.destroy();
-    }, [url]);
+
+            try {
+                await wavesurfer.current.load(url);
+            } catch (error) {
+                console.error("Error loading wavesurfer:", error);
+            }
+        };
+
+        setupWaveSurfer();
+
+        return () => {
+            if (wavesurfer.current) {
+                wavesurfer.current.destroy();
+                wavesurfer.current = null;
+            }
+        };
+    }, [url, volume]);
 
     const handlePlayPause = () => {
-        setPlay(!playing);
-        wavesurfer.current.playPause();
+        setPlaying(!playing);
+        if (wavesurfer.current) {
+            wavesurfer.current.playPause();
+        }
     };
 
-    const onVolumeChange = e => {
-        const { target } = e;
-        const newVolume = +target.value;
-
-        if (newVolume) {
-            setVolume(newVolume);
-            wavesurfer.current.setVolume(newVolume || 1);
+    const onVolumeChange = (e) => {
+        const newVolume = +e.target.value;
+        setVolume(newVolume);
+        if (wavesurfer.current) {
+            wavesurfer.current.setVolume(newVolume);
         }
     };
 
@@ -59,22 +77,19 @@ export default function Waveform({ url }) {
             <div id="waveform" ref={waveformRef} />
             <div style={{display: "flex", flexDirection: "column", alignItems: "center" }} className="controls">
                 <Button className="rounded-full text-4xl pt-10 size-30" onClick={handlePlayPause}>
-                    {playing ? <PauseIcon fontSize="xl30"/> : <PlayArrowIcon fontSize="xl30"/>}
+                    {playing ? <PauseIcon fontSize="large" /> : <PlayArrowIcon fontSize="large" />}
                 </Button>
-                {/*
-                <input
+                {/* Uncomment this section for volume control if needed */}
+                {/* <input
                     type="range"
                     id="volume"
                     name="volume"
-                    // waveSurfer recognize value of `0` same as `1`
-                    //  so we need to set some zero-ish value for silence
                     min="0.01"
                     max="1"
                     step=".025"
                     onChange={onVolumeChange}
                     defaultValue={volume}
-                />
-                */}
+                /> */}
             </div>
         </div>
     );
