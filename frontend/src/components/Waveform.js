@@ -120,30 +120,32 @@ export default function Waveform({ url }) {
     return (
         <div style={{ width: "900px"}}>
             <div id="waveform" ref={waveformRef} />
-            <p className="flex justify-center text-l pt-10 size-30">{`${formatTime(currentTime)} / ${formatTime(duration)}`}</p>
-            <div style={{display: "flex", flexDirection: "row", justifyContent: "space-evenly", alignItems: "center" }} className="controls">
-                
-                <Button className="rounded-full text-4xl pt-5 size-30" onClick={handleSkipBack}>
-                    <FastRewindIcon fontSize="large" />
-                </Button>
-                <Button className="rounded-full text-4xl pt-5 size-30" onClick={handlePlayPause}>
-                    {playing ? <PauseIcon fontSize="large" /> : <PlayArrowIcon fontSize="large" />}
-                </Button>
-                <Button className="rounded-full text-4xl pt-5 size-30" onClick={handleSkipForward}>
-                    <FastForwardIcon fontSize="large" />
-                </Button>
-                
-                {/* Uncomment this section for volume control if needed */}
-                {/* <input
-                    type="range"
-                    id="volume"
-                    name="volume"
-                    min="0.01"
-                    max="1"
-                    step=".025"
-                    onChange={onVolumeChange}
-                    defaultValue={volume}
-                /> */}
+            <p className="flex justify-center text-l pt-7">{`${formatTime(currentTime)} / ${formatTime(duration)}`}</p>
+            <div className="flex justify-center">
+                <div style={{ width:"200px", display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center" }} className="controls">
+                    
+                    <Button className="rounded-full text-4xl pt-5 size-30" onClick={handleSkipBack}>
+                        <FastRewindIcon fontSize="large" />
+                    </Button>
+                    <Button className="rounded-full text-4xl pt-5 size-30" onClick={handlePlayPause}>
+                        {playing ? <PauseIcon fontSize="large" /> : <PlayArrowIcon fontSize="large" />}
+                    </Button>
+                    <Button className="rounded-full text-4xl pt-5 size-30" onClick={handleSkipForward}>
+                        <FastForwardIcon fontSize="large" />
+                    </Button>
+                    
+                    {/* Uncomment this section for volume control if needed */}
+                    {/* <input
+                        type="range"
+                        id="volume"
+                        name="volume"
+                        min="0.01"
+                        max="1"
+                        step=".025"
+                        onChange={onVolumeChange}
+                        defaultValue={volume}
+                    /> */}
+                </div>
             </div>
         </div>
     );
