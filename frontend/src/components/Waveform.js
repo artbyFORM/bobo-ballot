@@ -3,6 +3,7 @@ import { Button } from "@mui/base";
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import PauseIcon from '@mui/icons-material/Pause';
 import WaveSurfer from "wavesurfer.js";
+import Hover from 'wavesurfer.js/dist/plugins/hover.esm.js'
 
 const formWaveSurferOptions = ref => ({
     container: ref,
@@ -14,7 +15,16 @@ const formWaveSurferOptions = ref => ({
     responsive: true,
     height: 100,
     normalize: true,
-    partialRender: true
+    partialRender: true,
+    plugins: [
+        Hover.create({
+          lineColor: '#EC4899',
+          lineWidth: 2,
+          labelBackground: '#555',
+          labelColor: '#fff',
+          labelSize: '11px',
+        }),
+      ],
 });
 
 export default function Waveform({ url }) {
@@ -22,6 +32,8 @@ export default function Waveform({ url }) {
     const wavesurfer = useRef(null);
     const [playing, setPlaying] = useState(false);
     const [volume, setVolume] = useState(0.5);
+    const [duration, setDuration] = useState(0);
+    const [currentTime, setCurrentTime] = useState(0);
 
     useEffect(() => {
         const setupWaveSurfer = async () => {
@@ -31,6 +43,17 @@ export default function Waveform({ url }) {
                 wavesurfer.current.on("ready", () => {
                     if (wavesurfer.current) {
                         wavesurfer.current.setVolume(volume);
+                        setDuration(wavesurfer.current.getDuration());
+                    }
+                });
+                wavesurfer.current.on("audioprocess", () => {
+                    if (wavesurfer.current) {
+                        // reset the play head to start when it reaches the end
+                        if (wavesurfer.current.getCurrentTime() >= wavesurfer.current.getDuration()) {
+                            wavesurfer.current.seekTo(0);
+                            handlePlayPause();
+                        }
+                        setCurrentTime(wavesurfer.current.getCurrentTime());
                     }
                 });
                 wavesurfer.current.on("error", (error) => {
@@ -49,6 +72,8 @@ export default function Waveform({ url }) {
 
         return () => {
             if (wavesurfer.current) {
+                wavesurfer.current.un('audioprocess');
+                wavesurfer.current.un('ready');
                 wavesurfer.current.destroy();
                 wavesurfer.current = null;
             }
@@ -56,9 +81,9 @@ export default function Waveform({ url }) {
     }, [url, volume]);
 
     const handlePlayPause = () => {
-        setPlaying(!playing);
+        setPlaying(prevPlaying => !prevPlaying);
         if (wavesurfer.current) {
-            wavesurfer.current.playPause();
+        wavesurfer.current.playPause();
         }
     };
 
@@ -70,11 +95,18 @@ export default function Waveform({ url }) {
         }
     };
 
+    function formatTime(seconds) {
+        let date = new Date(0);
+        date.setSeconds(seconds);
+        return date.toISOString().substr(14, 5);
+    }
+
     return (
         <div style={{ width: "900px"}}>
             <div id="waveform" ref={waveformRef} />
             <div style={{display: "flex", flexDirection: "column", alignItems: "center" }} className="controls">
-                <Button className="rounded-full text-4xl pt-10 size-30" onClick={handlePlayPause}>
+                <p className="text-l pt-10 size-30">{`${formatTime(currentTime)} / ${formatTime(duration)}`}</p>
+                <Button className="rounded-full text-4xl pt-5 size-30" onClick={handlePlayPause}>
                     {playing ? <PauseIcon fontSize="large" /> : <PlayArrowIcon fontSize="large" />}
                 </Button>
                 {/* Uncomment this section for volume control if needed */}
