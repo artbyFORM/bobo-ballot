@@ -28,22 +28,20 @@ export default function Waveform({ url }) {
             if (!wavesurfer.current) {
                 const options = formWaveSurferOptions(waveformRef.current);
                 wavesurfer.current = WaveSurfer.create(options);
-
                 wavesurfer.current.on("ready", () => {
                     if (wavesurfer.current) {
                         wavesurfer.current.setVolume(volume);
                     }
                 });
-
                 wavesurfer.current.on("error", (error) => {
-                    console.error("WaveSurfer error:", error);
+                    console.error("error loading WaveSurfer:", error);
                 });
             }
 
             try {
                 await wavesurfer.current.load(url);
             } catch (error) {
-                console.error("Error loading wavesurfer:", error);
+                console.error("error loading URL for WaveSurfer:", error);
             }
         };
 
