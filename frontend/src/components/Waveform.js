@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import { Button } from "@mui/base";
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import PauseIcon from '@mui/icons-material/Pause';
+import FastRewindIcon from '@mui/icons-material/FastRewind';
+import FastForwardIcon from '@mui/icons-material/FastForward';
 import WaveSurfer from "wavesurfer.js";
 import Hover from 'wavesurfer.js/dist/plugins/hover.esm.js'
 
@@ -83,9 +85,23 @@ export default function Waveform({ url }) {
     const handlePlayPause = () => {
         setPlaying(prevPlaying => !prevPlaying);
         if (wavesurfer.current) {
-        wavesurfer.current.playPause();
+            wavesurfer.current.playPause();
         }
     };
+
+    const handleSkipBack = () => {
+        if (wavesurfer.current) {
+            setCurrentTime(wavesurfer.current.getCurrentTime() - 5);
+            wavesurfer.current.seekTo((currentTime - 5) / duration);
+        }
+    }
+
+    const handleSkipForward = () => {
+        if (wavesurfer.current) {
+            setCurrentTime(wavesurfer.current.getCurrentTime() + 5);
+            wavesurfer.current.seekTo((currentTime + 5) / duration);
+        }
+    }
 
     const onVolumeChange = (e) => {
         const newVolume = +e.target.value;
@@ -104,11 +120,19 @@ export default function Waveform({ url }) {
     return (
         <div style={{ width: "900px"}}>
             <div id="waveform" ref={waveformRef} />
-            <div style={{display: "flex", flexDirection: "column", alignItems: "center" }} className="controls">
-                <p className="text-l pt-10 size-30">{`${formatTime(currentTime)} / ${formatTime(duration)}`}</p>
+            <p className="flex justify-center text-l pt-10 size-30">{`${formatTime(currentTime)} / ${formatTime(duration)}`}</p>
+            <div style={{display: "flex", flexDirection: "row", justifyContent: "space-evenly", alignItems: "center" }} className="controls">
+                
+                <Button className="rounded-full text-4xl pt-5 size-30" onClick={handleSkipBack}>
+                    <FastRewindIcon fontSize="large" />
+                </Button>
                 <Button className="rounded-full text-4xl pt-5 size-30" onClick={handlePlayPause}>
                     {playing ? <PauseIcon fontSize="large" /> : <PlayArrowIcon fontSize="large" />}
                 </Button>
+                <Button className="rounded-full text-4xl pt-5 size-30" onClick={handleSkipForward}>
+                    <FastForwardIcon fontSize="large" />
+                </Button>
+                
                 {/* Uncomment this section for volume control if needed */}
                 {/* <input
                     type="range"
