@@ -4,33 +4,19 @@ import (
 	"log"
 	"time"
 
-	"gorm.io/driver/sqlite"
+	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
 var db *gorm.DB
 
-type Submission struct {
+type Vote struct {
 	gorm.Model
 
-	ID              uint     `gorm:"type:integer;primaryKey;unique"`
-	Title           string   `gorm:"type:text"`
-	PrimaryAliases  []string `gorm:"type:text;not null"`
-	FeaturedAliases []string `gorm:"type:text"`
-	WaveURL         string   `gorm:"type:text"`
-	AdminURL        string   `gorm:"type:text"`
-	Votes           []Vote
-	Disqualified    bool `gorm:"type:boolean"`
-
-	CreatedAt time.Time
-	UpdatedAt time.Time
-}
-
-type Vote struct {
-	ID           uint `gorm:"primaryKey;autoIncrement;unique"`
+	ID           uint `gorm:"primarykey;autoIncrement;unique"`
+	SubmissionID int  `gorm:"type:integer"`
 	OwnerID      uint `gorm:"type:integer;not null"`
 	Value        uint `gorm:"type:integer;not null"`
-	SubmissionID uint `gorm:"type:integer;not null;index"`
 
 	CreatedAt time.Time
 	UpdatedAt time.Time
@@ -46,12 +32,17 @@ type User struct {
 }
 
 func init() {
-	db, err := gorm.Open(sqlite.Open("test.db"), &gorm.Config{})
+	var err error
+
+	// TODO: connect with secret not hardcode
+	db, err = gorm.Open(postgres.New(postgres.Config{
+		DSN:                  "postgres://postgres:MNINpVepmJ6LLvr@137.66.33.63:5432/postgres",
+		PreferSimpleProtocol: true, // disables implicit prepared statement usage
+	}))
+
 	if err != nil {
 		log.Fatalf("failed to connect database: %v", err)
 	}
 
 	db.AutoMigrate(&Submission{}, &Vote{}, &User{})
-
-	log.Println("database connection established", db) // TODO: remove db from this it just needs to be used somewhere
 }

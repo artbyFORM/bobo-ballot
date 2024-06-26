@@ -1,23 +1,21 @@
 package main
 
 import (
-	"net/http"
+	"fmt"
 
 	"github.com/gin-gonic/gin"
+	_ "github.com/joho/godotenv/autoload"
 )
 
 func main() {
 	r := gin.Default()
 
-	r.Any("/ws", func(c *gin.Context) {
-		c.JSON(200, "this is not implemented")
-	})
+	api := r.Group("/api")
 
-	r.GET("/ping", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"message": "pong",
-		})
-	})
+	submissions := api.Group("/submissions")
+	submissions.POST("/add", apiSubmissionsAdd)
+	submissions.GET("/get", apiSubmissionsGet)
 
+	fmt.Println("server running")
 	r.Run()
 }
