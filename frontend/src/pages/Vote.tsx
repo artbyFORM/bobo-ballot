@@ -12,7 +12,7 @@ const Vote: React.FC = () => {
   const totalRows = 12; // hard coded for now
   const [vote, setVote] = useState<number>(1);
 
-  const [trackURL, setTrackURL] = useState("https://ia601208.us.archive.org/33/items/SKRILLEXBangarangFeat.SirahOfficialMusicVideo_201509/SKRILLEX%20-%20Bangarang%20feat.%20Sirah%20%5BOfficial%20Music%20Video%5D.mp3");
+  const [trackURL, setTrackURL] = useState("https://r2.minecraft.college/Skrillex%20-%20First%20Of%20The%20Year%20(Equinox).wav");
 
   // Handle keyboard input
   useEffect(() => {

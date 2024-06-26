@@ -4,6 +4,10 @@ import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import PauseIcon from '@mui/icons-material/Pause';
 import FastRewindIcon from '@mui/icons-material/FastRewind';
 import FastForwardIcon from '@mui/icons-material/FastForward';
+import Stack from '@mui/material/Stack';
+import Slider from '@mui/material/Slider';
+import VolumeDown from '@mui/icons-material/VolumeDown';
+import VolumeUp from '@mui/icons-material/VolumeUp';
 import WaveSurfer from "wavesurfer.js";
 import Hover from 'wavesurfer.js/dist/plugins/hover.esm.js'
 
@@ -17,6 +21,8 @@ const formWaveSurferOptions = ref => ({
     responsive: true,
     height: 100,
     normalize: true,
+    minPxPerSec: 3, 
+    pixelRatio: 1,
     partialRender: true,
     plugins: [
         Hover.create({
@@ -64,7 +70,7 @@ export default function Waveform({ url }) {
             }
 
             try {
-                await wavesurfer.current.load(url);
+                await wavesurfer.current.load(`http://localhost:3001/proxy?url=${url}`);
             } catch (error) {
                 console.error("error loading URL for WaveSurfer:", error);
             }
@@ -80,7 +86,7 @@ export default function Waveform({ url }) {
                 wavesurfer.current = null;
             }
         };
-    }, [url, volume]);
+    }, [url]);
 
     const handlePlayPause = () => {
         setPlaying(prevPlaying => !prevPlaying);
@@ -105,8 +111,8 @@ export default function Waveform({ url }) {
 
     const onVolumeChange = (e) => {
         const newVolume = +e.target.value;
-        setVolume(newVolume);
         if (wavesurfer.current) {
+            setVolume(newVolume);
             wavesurfer.current.setVolume(newVolume);
         }
     };
@@ -122,29 +128,27 @@ export default function Waveform({ url }) {
             <div id="waveform" ref={waveformRef} />
             <p className="flex justify-center text-l pt-7">{`${formatTime(currentTime)} / ${formatTime(duration)}`}</p>
             <div className="flex justify-center">
-                <div style={{ width:"200px", display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center" }} className="controls">
+                <div style={{ width:"900px", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }} className="controls">
                     
-                    <Button className="rounded-full text-4xl pt-5 size-30" onClick={handleSkipBack}>
-                        <FastRewindIcon fontSize="large" />
-                    </Button>
-                    <Button className="rounded-full text-4xl pt-5 size-30" onClick={handlePlayPause}>
-                        {playing ? <PauseIcon fontSize="large" /> : <PlayArrowIcon fontSize="large" />}
-                    </Button>
-                    <Button className="rounded-full text-4xl pt-5 size-30" onClick={handleSkipForward}>
-                        <FastForwardIcon fontSize="large" />
-                    </Button>
-                    
-                    {/* Uncomment this section for volume control if needed */}
-                    {/* <input
-                        type="range"
-                        id="volume"
-                        name="volume"
-                        min="0.01"
-                        max="1"
-                        step=".025"
-                        onChange={onVolumeChange}
-                        defaultValue={volume}
-                    /> */}
+                    <div className="pt-5" style={{ display: "flex", justifyContent: "space-between", width: "300px" }}>
+                        <Button className="rounded-full text-4xl size-30" onClick={handleSkipBack}>
+                            <FastRewindIcon fontSize="large" />
+                        </Button>
+                        <Button className="rounded-full text-4xl size-30" onClick={handlePlayPause}>
+                            {playing ? <PauseIcon fontSize="large" /> : <PlayArrowIcon fontSize="large" />}
+                        </Button>
+                        <Button className="rounded-full text-4xl size-30" onClick={handleSkipForward}>
+                            <FastForwardIcon fontSize="large" />
+                        </Button>
+                    </div>
+
+                    <div className="mt-5">
+                        <Stack spacing={2} direction="row" sx={{ mb: 1, width: 300 }} alignItems="center">
+                            <VolumeDown />
+                            <Slider width={100} color="pink" min={0} max={1} step={.025} aria-label="Volume" value={volume} onChange={onVolumeChange} />
+                            <VolumeUp />
+                        </Stack>
+                    </div>
                 </div>
             </div>
         </div>
