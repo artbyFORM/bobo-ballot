@@ -35,12 +35,11 @@ const formWaveSurferOptions = ref => ({
       ],
 });
 
-export default function Waveform({ url }) {
+export default function Waveform({ url, duration }) {
     const waveformRef = useRef(null);
     const wavesurfer = useRef(null);
     const [playing, setPlaying] = useState(false);
     const [volume, setVolume] = useState(0.5);
-    const [duration, setDuration] = useState(0);
     const [currentTime, setCurrentTime] = useState(0);
 
     useEffect(() => {
@@ -91,14 +90,13 @@ export default function Waveform({ url }) {
             });
             wavesurfer.current.on("ready", () => {
                     wavesurfer.current.setVolume(volume);
-                    setDuration(wavesurfer.current.getDuration());
             });
             wavesurfer.current.on("audioprocess", () => {
-                    if(wavesurfer.current.getCurrentTime() <= wavesurfer.current.getDuration()) {
+                    if(wavesurfer.current.getCurrentTime() < duration) {
                         setCurrentTime(wavesurfer.current.getCurrentTime());
                     }
                     // reset the play head to start when it reaches the end
-                    if (wavesurfer.current.getCurrentTime() >= wavesurfer.current.getDuration()) {
+                    if (wavesurfer.current.getCurrentTime() >= duration) {
                         wavesurfer.current.pause();
                         wavesurfer.current.seekTo(0);
                         setCurrentTime(0);

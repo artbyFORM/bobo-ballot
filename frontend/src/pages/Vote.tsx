@@ -73,7 +73,7 @@ const Vote: React.FC = () => {
             {id ? <h1 className="text-4xl font-light pb-5">{data.artists[0].data.name}</h1> : "..."}
             {id ? (
               <div className="w-900 h-200 pt-5 pb-10">
-                <Waveform key={`waveform-${id}`} url={data.listen} />
+                <Waveform key={`waveform-${id}`} url={data.listen} duration={data.song.data.duration} />
               </div>
             ) : null}
             <div className="flex pb-5">
