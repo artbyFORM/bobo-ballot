@@ -48,25 +48,6 @@ export default function Waveform({ url }) {
             if (!wavesurfer.current) {
                 const options = formWaveSurferOptions(waveformRef.current);
                 wavesurfer.current = WaveSurfer.create(options);
-                wavesurfer.current.on("ready", () => {
-                    if (wavesurfer.current) {
-                        wavesurfer.current.setVolume(volume);
-                        setDuration(wavesurfer.current.getDuration());
-                    }
-                });
-                wavesurfer.current.on("audioprocess", () => {
-                    if (wavesurfer.current) {
-                        // reset the play head to start when it reaches the end
-                        if (wavesurfer.current.getCurrentTime() >= wavesurfer.current.getDuration()) {
-                            wavesurfer.current.seekTo(0);
-                            handlePlayPause();
-                        }
-                        setCurrentTime(wavesurfer.current.getCurrentTime());
-                    }
-                });
-                wavesurfer.current.on("error", (error) => {
-                    console.error("error loading WaveSurfer:", error);
-                });
             }
 
             try {
@@ -89,23 +70,61 @@ export default function Waveform({ url }) {
     }, [url]);
 
     const handlePlayPause = () => {
-        setPlaying(prevPlaying => !prevPlaying);
         if (wavesurfer.current) {
-            wavesurfer.current.playPause();
+            const isPlaying = wavesurfer.current.isPlaying();
+            setPlaying(!isPlaying);
+            if (isPlaying) {
+                wavesurfer.current.pause();
+            } else {
+                wavesurfer.current.play();
+            }
         }
     };
 
+    useEffect(() => {
+        if (wavesurfer.current) {
+            wavesurfer.current.on("play", () => {
+                setPlaying(true);
+            });
+            wavesurfer.current.on("pause", () => {
+                setPlaying(false);
+            });
+            wavesurfer.current.on("ready", () => {
+                    wavesurfer.current.setVolume(volume);
+                    setDuration(wavesurfer.current.getDuration());
+            });
+            wavesurfer.current.on("audioprocess", () => {
+                    if(wavesurfer.current.getCurrentTime() <= wavesurfer.current.getDuration()) {
+                        setCurrentTime(wavesurfer.current.getCurrentTime());
+                    }
+                    // reset the play head to start when it reaches the end
+                    if (wavesurfer.current.getCurrentTime() >= wavesurfer.current.getDuration()) {
+                        wavesurfer.current.pause();
+                        wavesurfer.current.seekTo(0);
+                        setCurrentTime(0);
+                    }
+            });
+            wavesurfer.current.on("error", (error) => {
+                console.error("error loading WaveSurfer:", error);
+            });
+        }
+    }, []);
+
     const handleSkipBack = () => {
         if (wavesurfer.current) {
-            setCurrentTime(wavesurfer.current.getCurrentTime() - 5);
-            wavesurfer.current.seekTo((currentTime - 5) / duration);
+            const newTime = wavesurfer.current.getCurrentTime() - 5;
+            const currentTimeInRange = Math.max(0, newTime);
+            setCurrentTime(currentTimeInRange);
+            wavesurfer.current.seekTo(currentTimeInRange / duration);
         }
     }
 
     const handleSkipForward = () => {
         if (wavesurfer.current) {
-            setCurrentTime(wavesurfer.current.getCurrentTime() + 5);
-            wavesurfer.current.seekTo((currentTime + 5) / duration);
+            const newTime = wavesurfer.current.getCurrentTime() + 5;
+            const currentTimeInRange = Math.min(newTime, duration);
+            setCurrentTime(currentTimeInRange);
+            wavesurfer.current.seekTo(currentTimeInRange / duration);
         }
     }
 
@@ -118,9 +137,10 @@ export default function Waveform({ url }) {
     };
 
     function formatTime(seconds) {
+        seconds = Math.floor(seconds); // truncate to nearest second
         let date = new Date(0);
         date.setSeconds(seconds);
-        return date.toISOString().substr(14, 5);
+        return date.toISOString().substr(14, 5); // MM:SS
     }
 
     return (
