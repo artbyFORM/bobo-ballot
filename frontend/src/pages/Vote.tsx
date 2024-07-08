@@ -5,7 +5,13 @@ import Waveform from '../components/Waveform';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
+import Stack from '@mui/material/Stack';
+import Slider from '@mui/material/Slider';
+import VolumeDown from '@mui/icons-material/VolumeDown';
+import VolumeUp from '@mui/icons-material/VolumeUp';
+
 import axios from 'axios';
+import Box from '@mui/material/Box';
 
 const validVoteKeys = [1, 2, 3, 4, 5]; // TODO: make this based on current round
 
@@ -15,6 +21,7 @@ const Vote: React.FC = () => {
   const [vote, setVote] = useState<number>(1);
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const [volume, setVolume] = useState<number>(0.5);
 
   useEffect(() => {
     async function getSong() {
@@ -60,6 +67,11 @@ const Vote: React.FC = () => {
     setVote(vote);
   };
 
+  const onVolumeChange = (event: Event, value: number | number[]) => {
+    const newVolume = Array.isArray(value) ? value[0] : value;
+    setVolume(newVolume);
+  };
+
   if (loading) return <div>Loading...</div>;
 
   return (
@@ -72,9 +84,14 @@ const Vote: React.FC = () => {
             {id ? <h1 className="text-4xl font-extrabold pt-5 pb-5">{data.song.data.title}</h1> : "..."}
             {id ? <h1 className="text-4xl font-light pb-5">{data.artists[0].data.name}</h1> : "..."}
             {id ? (
-              <div className="w-900 h-200 pt-5 pb-10">
-                <Waveform key={`waveform-${id}`} url={data.listen} duration={data.song.data.duration} />
-              </div>
+                <Box className="w-900 h-200 pt-5 pb-10" sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+                  <Waveform key={`waveform-${id}`} url={data.listen} duration={data.song.data.duration} volume={volume} />
+                  <Stack spacing={2} direction="row" sx={{ my: 3, width: 300}}>
+                    <VolumeDown />
+                    <Slider min={0} max={1} step={0.025} aria-label="Volume" value={volume} onChange={onVolumeChange} sx={{ color:"black", width: 300 }} />
+                    <VolumeUp />
+                  </Stack>
+                </Box>
             ) : null}
             <div className="flex pb-5">
               {validVoteKeys.map((key) => (

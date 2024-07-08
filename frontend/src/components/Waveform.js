@@ -35,11 +35,10 @@ const formWaveSurferOptions = ref => ({
       ],
 });
 
-export default function Waveform({ url, duration }) {
+export default function Waveform({ url, duration, volume }) {
     const waveformRef = useRef(null);
     const wavesurfer = useRef(null);
     const [playing, setPlaying] = useState(false);
-    const [volume, setVolume] = useState(0.5);
     const [currentTime, setCurrentTime] = useState(0);
 
     useEffect(() => {
@@ -51,6 +50,32 @@ export default function Waveform({ url, duration }) {
 
             try {
                 await wavesurfer.current.load(`http://localhost:3001/proxy?url=${url}`);
+                if (wavesurfer.current) {
+                    wavesurfer.current.setVolume(volume);
+                    wavesurfer.current.on("play", () => {
+                        setPlaying(true);
+                    });
+                    wavesurfer.current.on("pause", () => {
+                        setPlaying(false);
+                    });
+                    wavesurfer.current.on("ready", () => {
+                        setCurrentTime(0);
+                    });
+                    wavesurfer.current.on("audioprocess", () => {
+                            if(wavesurfer.current.getCurrentTime() < duration) {
+                                setCurrentTime(wavesurfer.current.getCurrentTime());
+                            }
+                            // reset the play head to start when it reaches the end
+                            if (wavesurfer.current.getCurrentTime() >= duration) {
+                                wavesurfer.current.pause();
+                                wavesurfer.current.seekTo(0);
+                                setCurrentTime(0);
+                            }
+                    });
+                    wavesurfer.current.on("error", (error) => {
+                        console.error("error loading WaveSurfer:", error);
+                    });
+                }
             } catch (error) {
                 console.error("error loading URL for WaveSurfer:", error);
             }
@@ -68,6 +93,12 @@ export default function Waveform({ url, duration }) {
         };
     }, [url]);
 
+    useEffect(() => {
+        if (wavesurfer.current) {
+            wavesurfer.current.setVolume(volume);
+        }
+    }, [volume]);
+
     const handlePlayPause = () => {
         if (wavesurfer.current) {
             const isPlaying = wavesurfer.current.isPlaying();
@@ -79,34 +110,6 @@ export default function Waveform({ url, duration }) {
             }
         }
     };
-
-    useEffect(() => {
-        if (wavesurfer.current) {
-            wavesurfer.current.on("play", () => {
-                setPlaying(true);
-            });
-            wavesurfer.current.on("pause", () => {
-                setPlaying(false);
-            });
-            wavesurfer.current.on("ready", () => {
-                    wavesurfer.current.setVolume(volume);
-            });
-            wavesurfer.current.on("audioprocess", () => {
-                    if(wavesurfer.current.getCurrentTime() < duration) {
-                        setCurrentTime(wavesurfer.current.getCurrentTime());
-                    }
-                    // reset the play head to start when it reaches the end
-                    if (wavesurfer.current.getCurrentTime() >= duration) {
-                        wavesurfer.current.pause();
-                        wavesurfer.current.seekTo(0);
-                        setCurrentTime(0);
-                    }
-            });
-            wavesurfer.current.on("error", (error) => {
-                console.error("error loading WaveSurfer:", error);
-            });
-        }
-    }, []);
 
     const handleSkipBack = () => {
         if (wavesurfer.current) {
@@ -126,14 +129,6 @@ export default function Waveform({ url, duration }) {
         }
     }
 
-    const onVolumeChange = (e) => {
-        const newVolume = +e.target.value;
-        if (wavesurfer.current) {
-            setVolume(newVolume);
-            wavesurfer.current.setVolume(newVolume);
-        }
-    };
-
     function formatTime(seconds) {
         seconds = Math.floor(seconds); // truncate to nearest second
         let date = new Date(0);
@@ -147,7 +142,6 @@ export default function Waveform({ url, duration }) {
             <p className="flex justify-center text-l pt-7">{`${formatTime(currentTime)} / ${formatTime(duration)}`}</p>
             <div className="flex justify-center">
                 <div style={{ width:"900px", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }} className="controls">
-                    
                     <div className="pt-5" style={{ display: "flex", justifyContent: "space-between", width: "300px" }}>
                         <Button className="rounded-full text-4xl size-30" onClick={handleSkipBack}>
                             <FastRewindIcon fontSize="large" />
@@ -158,14 +152,6 @@ export default function Waveform({ url, duration }) {
                         <Button className="rounded-full text-4xl size-30" onClick={handleSkipForward}>
                             <FastForwardIcon fontSize="large" />
                         </Button>
-                    </div>
-
-                    <div className="mt-5">
-                        <Stack spacing={2} direction="row" sx={{ mb: 1, width: 300 }} alignItems="center">
-                            <VolumeDown />
-                            <Slider width={100} color="pink" min={0} max={1} step={.025} aria-label="Volume" value={volume} onChange={onVolumeChange} />
-                            <VolumeUp />
-                        </Stack>
                     </div>
                 </div>
             </div>
