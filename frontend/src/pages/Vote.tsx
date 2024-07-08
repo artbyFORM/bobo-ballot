@@ -12,7 +12,7 @@ const Vote: React.FC = () => {
   const totalRows = 12; // hard coded for now
   const [vote, setVote] = useState<number>(1);
 
-  const [trackURL, setTrackURL] = useState("https://r2.minecraft.college/Skrillex%20-%20First%20Of%20The%20Year%20(Equinox).wav");
+  const [trackURL, setTrackURL] = useState("https://s3.minecraft.college/party-rock-high-quality.mp3");
 
   // Handle keyboard input
   useEffect(() => {

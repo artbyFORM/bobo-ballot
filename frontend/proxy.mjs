@@ -4,11 +4,11 @@ const app = express();
 const PORT = 3001;
 
 app.use('/proxy', async (req, res) => {
-    const url = req.query.url;
-    console.log(url)
-    // Check if the URL is provided and is a valid URL
+    const url = req.originalUrl.replace('/proxy?url=', '');
+    console.log("attempting to fetch: ", url);
+    
     try {
-        new URL(url); // This will throw an error if the URL is invalid
+        new URL(url);
     } catch (error) {
         console.error(error);
         return res.status(400).send('Invalid or missing URL');
@@ -18,7 +18,7 @@ app.use('/proxy', async (req, res) => {
         const response = await fetch(url);
         const data = await response.buffer();
         res.setHeader('Content-Type', response.headers.get('Content-Type'));
-        res.setHeader('Access-Control-Allow-Origin', '*'); // Adjust in production
+        res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000'); // TODO: add other origins
         res.send(data);
     } catch (error) {
         console.error(error);
