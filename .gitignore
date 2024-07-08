@@ -14,3 +14,7 @@ logs
 
 # OS generated files
 .DS_Store
+
+# env
+.env
+.env.local
