@@ -88,7 +88,7 @@ export default function Waveform({ url, waveform, duration, volume }) {
                 wavesurfer.current = null;
             }
         };
-    }, [duration, url, volume, waveform]);
+    }, [url, waveform]);
 
     useEffect(() => {
         if (wavesurfer.current) {
