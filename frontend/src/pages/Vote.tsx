@@ -16,25 +16,32 @@ import Box from '@mui/material/Box';
 const validVoteKeys = [1, 2, 3, 4, 5]; // TODO: make this based on current round
 
 const Vote: React.FC = () => {
-  const [id, setId] = useState<number>(103);
-  const totalRows = 999; // hard coded for now
+  const [id, setId] = useState<number>(17);
+  const totalRows = 562; // hard coded for now
   const [vote, setVote] = useState<number>(1);
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [volume, setVolume] = useState<number>(0.5);
+  const [waveform, setWaveform] = useState<any>([]);
 
   useEffect(() => {
     async function getSong() {
         const admkey = process.env.REACT_APP_ADMIN_KEY;
         if (!admkey) return;
         
-        const info = await axios.get(`https://api.submit.artbyform.com/admin/song/${id}`, {
-            headers: { Authorization: "Bearer " + admkey },
-            validateStatus: () => true,
+        const info = await axios.get(`https://api.submit.artbyform.com/admin/song/${id}`, 
+          { headers: { Authorization: "Bearer " + admkey },
+          validateStatus: () => true,
+        });
+
+        const waveData = await axios.post('https://api.wave.ac/graphql', 
+          { query: `{ track(username:"form",permalink:"${info.data.data.song.waveac_id}",privacyCode:"${info.data.data.song.data.ptoken}") { waveform } }` }, 
+          { headers: { Authorization: "Bearer " + admkey },
         });
 
         //if (!info.data.success) return setErr(info.data.message);
         setData(info.data.data);
+        setWaveform(waveData.data.data.track.waveform);
         console.log(info.data.data.listen);
         setLoading(false);
     }
@@ -85,7 +92,7 @@ const Vote: React.FC = () => {
             {id ? <h1 className="text-4xl font-light pb-5">{data.artists[0].data.name}</h1> : "..."}
             {id ? (
                 <Box className="w-900 h-200 pt-5 pb-10" sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
-                  <Waveform key={`waveform-${id}`} url={data.listen} duration={data.song.data.duration} volume={volume} />
+                  <Waveform key={`waveform-${id}`} url={data.listen} waveform={waveform} duration={data.song.data.duration} volume={volume} />
                   <Stack spacing={2} direction="row" sx={{ my: 3, width: 300}}>
                     <VolumeDown />
                     <Slider min={0} max={1} step={0.025} aria-label="Volume" value={volume} onChange={onVolumeChange} sx={{ color:"black", width: 300 }} />

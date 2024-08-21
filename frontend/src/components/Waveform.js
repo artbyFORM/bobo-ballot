@@ -19,6 +19,7 @@ const formWaveSurferOptions = ref => ({
     normalize: true,
     minPxPerSec: 3, 
     pixelRatio: 1,
+    backend: 'MediaElement',
     partialRender: true,
     plugins: [
         Hover.create({
@@ -31,7 +32,7 @@ const formWaveSurferOptions = ref => ({
       ],
 });
 
-export default function Waveform({ url, duration, volume }) {
+export default function Waveform({ url, waveform, duration, volume }) {
     const waveformRef = useRef(null);
     const wavesurfer = useRef(null);
     const [playing, setPlaying] = useState(false);
@@ -45,7 +46,7 @@ export default function Waveform({ url, duration, volume }) {
             }
 
             try {
-                await wavesurfer.current.load(`http://localhost:3001/proxy?url=${url}`);
+                await wavesurfer.current.load(url, waveform);
                 if (wavesurfer.current) {
                     wavesurfer.current.setVolume(volume);
                     wavesurfer.current.on("play", () => {
@@ -87,7 +88,7 @@ export default function Waveform({ url, duration, volume }) {
                 wavesurfer.current = null;
             }
         };
-    }, [url]);
+    }, [duration, url, volume, waveform]);
 
     useEffect(() => {
         if (wavesurfer.current) {
