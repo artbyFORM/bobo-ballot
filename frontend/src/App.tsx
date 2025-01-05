@@ -1,10 +1,10 @@
-import React from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import Navbar from './components/Navbar';
-import Home from './pages/Home';
-import Vote from './pages/Vote';
+import React from "react";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import Navbar from "./components/Navbar";
+import Home from "./pages/Home";
+import Vote from "./pages/Vote";
 
-import ThemeProvider from './ThemeContext';
+import ThemeProvider from "./ThemeContext";
 
 const App: React.FC = () => {
   return (
@@ -20,6 +20,6 @@ const App: React.FC = () => {
       </Router>
     </ThemeProvider>
   );
-}
+};
 
 export default App;
