@@ -88,6 +88,7 @@ export default function Waveform({ url, waveform, duration, volume }) {
         wavesurfer.current = null;
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [url, waveform]);
 
   useEffect(() => {
