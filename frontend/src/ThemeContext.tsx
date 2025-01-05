@@ -1,6 +1,10 @@
-import React, { createContext, useState, useMemo, useContext } from 'react';
-import { ThemeProvider as MuiThemeProvider, createTheme, Theme } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
+import React, { createContext, useState, useMemo, useContext } from "react";
+import {
+  ThemeProvider as MuiThemeProvider,
+  createTheme,
+  Theme,
+} from "@mui/material/styles";
+import CssBaseline from "@mui/material/CssBaseline";
 
 interface ThemeContextType {
   toggleTheme: () => void;
@@ -12,12 +16,14 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 export const useTheme = (): ThemeContextType => {
   const context = useContext(ThemeContext);
   if (!context) {
-    throw new Error('useTheme must be used within a ThemeProvider');
+    throw new Error("useTheme must be used within a ThemeProvider");
   }
   return context;
 };
 
-const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const [isDarkMode, setIsDarkMode] = useState(false);
 
   const toggleTheme = () => {
@@ -28,7 +34,7 @@ const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) =>
     () =>
       createTheme({
         palette: {
-          mode: isDarkMode ? 'dark' : 'light',
+          mode: isDarkMode ? "dark" : "light",
           primary: {
             main: "#FFFFFF",
           },
