@@ -68,7 +68,7 @@ const Vote: React.FC = () => {
     return () => {
       document.removeEventListener("keydown", handleKeyPress);
     };
-  }, [vote]); // Added dependency array
+  }, [vote]);
 
   const changeId = (newRow: number) => {
     setId(newRow);
