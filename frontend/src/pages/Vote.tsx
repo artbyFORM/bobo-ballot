@@ -10,7 +10,7 @@ import Slider from "@mui/material/Slider";
 import VolumeDown from "@mui/icons-material/VolumeDown";
 import VolumeUp from "@mui/icons-material/VolumeUp";
 
-import axios from "axios";
+import axios, { all } from "axios";
 import Box from "@mui/material/Box";
 
 const validVoteKeys = [1, 2, 3, 4, 5]; // TODO: make this based on current round
@@ -18,47 +18,94 @@ const validVoteKeys = [1, 2, 3, 4, 5]; // TODO: make this based on current round
 const Vote: React.FC = () => {
   const [id, setId] = useState<number>(17);
   const totalRows = 562; // hard coded for now
-  const [vote, setVote] = useState<number>(1);
-  const [data, setData] = useState<any>(null);
+
+  const [allVotes, setAllVotes] = useState<any>([]);
+
+  const [currentVote, setCurrentVote] = useState<number>(-1);
+  const [currentSongData, setCurrentSongData] = useState<any>(null);
+  const [currentSongWaveform, setCurrentSongWaveform] = useState<any>([]);
+
   const [loading, setLoading] = useState<boolean>(true);
   const [volume, setVolume] = useState<number>(0.5);
-  const [waveform, setWaveform] = useState<any>([]);
+
+  useEffect(() => {
+    const adminKey = process.env.REACT_APP_ADMIN_KEY;
+    if (!adminKey) console.error("Admin key not found");
+    axios.defaults.headers.common["Authorization"] = "Bearer " + adminKey;
+
+    //get all vote data
+    axios
+      .get("https://api.submit.artbyform.com/ballot")
+      .then((res) => {
+        setAllVotes(res.data);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+
+    return () => {
+      axios.defaults.headers.common["Authorization"] = null;
+    };
+  }, []);
 
   useEffect(() => {
     async function getSong() {
-      const admkey = process.env.REACT_APP_ADMIN_KEY;
-      if (!admkey) return;
+      try {
+        const songData = await axios
+          .get(`https://api.submit.artbyform.com/admin/song/${id}`)
+          .then((res) => {
+            return res.data.data;
+          });
 
-      const info = await axios.get(
-        `https://api.submit.artbyform.com/admin/song/${id}`,
-        {
-          headers: { Authorization: "Bearer " + admkey },
-          validateStatus: () => true,
+        const waveData = await axios
+          .post("https://api.wave.ac/graphql", {
+            query: `{ track(
+                        username:"form",
+                        permalink:"${songData.song.waveac_id}",
+                        privacyCode:"${songData.song.data.ptoken}"
+                      ) { waveform } 
+                    }`,
+          })
+          .then((res) => {
+            return res.data.data.track.waveform;
+          });
+
+        setCurrentSongData(songData);
+        setCurrentSongWaveform(waveData);
+
+        // set currentVote to most recent vote for this song from the current user - if it exists
+        const songVotes = allVotes.find((vote: any) => vote.song_id === id);
+        const vote = songVotes?.votes
+          .filter((vote: any) => vote.voter_id === "abby")
+          .sort(
+            (a: any, b: any) =>
+              new Date(b.created_at).getTime() -
+              new Date(a.created_at).getTime()
+          )[0];
+        if (vote) {
+          console.log(
+            `the latest for vote for song ${id} by ${vote.voter_id} was ${vote.vote}`
+          );
+          setCurrentVote(Math.floor(vote.vote));
         }
-      );
-
-      const waveData = await axios.post(
-        "https://api.wave.ac/graphql",
-        {
-          query: `{ track(username:"form",permalink:"${info.data.data.song.waveac_id}",privacyCode:"${info.data.data.song.data.ptoken}") { waveform } }`,
-        },
-        { headers: { Authorization: "Bearer " + admkey } }
-      );
-
-      //if (!info.data.success) return setErr(info.data.message);
-      setData(info.data.data);
-      setWaveform(waveData.data.data.track.waveform);
+      } catch (error) {
+        console.error("Error fetching song data:", error);
+      }
       setLoading(false);
     }
 
     getSong();
-  }, [id]);
+  }, [id, allVotes]);
+
+  useEffect(() => {
+    console.log("Current vote updated:", currentVote);
+  }, [currentVote]);
 
   // Handle keyboard input
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
       const key = Number(event.key);
-      if (validVoteKeys.includes(key) && key !== vote) {
+      if (validVoteKeys.includes(key) && key !== currentVote) {
         submitVote(key);
       }
     };
@@ -68,14 +115,30 @@ const Vote: React.FC = () => {
     return () => {
       document.removeEventListener("keydown", handleKeyPress);
     };
-  }, [vote]);
+  }, [currentVote]);
 
   const changeId = (newRow: number) => {
     setId(newRow);
   };
 
   const submitVote = async (vote: number) => {
-    setVote(vote);
+    // TODO: submit vote to backend
+    const voteObj = {
+      vote: vote,
+      voter_id: "abby", // TODO: get this from current user
+      round: 1,
+    };
+
+    console.log(`sending ${voteObj} to /ballot/${id}/vote`);
+
+    const res = await axios.post(
+      `https://api.submit.artbyform.com/ballot/${id}/vote`,
+      voteObj,
+      { validateStatus: () => true }
+    );
+    console.log(res);
+
+    setCurrentVote(vote);
   };
 
   const onVolumeChange = (event: Event, value: number | number[]) => {
@@ -100,14 +163,14 @@ const Vote: React.FC = () => {
             <h1 className="text-xl font-bold">{`${id}/${totalRows}`}</h1>
             {id ? (
               <h1 className="text-4xl font-extrabold pt-5 pb-5">
-                {data.song.data.title}
+                {currentSongData.song.data.title}
               </h1>
             ) : (
               "..."
             )}
             {id ? (
               <h1 className="text-4xl font-light pb-5">
-                {data.artists[0].data.name}
+                {currentSongData.artists[0].data.name}
               </h1>
             ) : (
               "..."
@@ -124,9 +187,9 @@ const Vote: React.FC = () => {
               >
                 <Waveform
                   key={`waveform-${id}`}
-                  url={data.listen}
-                  waveform={waveform}
-                  duration={data.song.data.duration}
+                  url={currentSongData.listen}
+                  waveform={currentSongWaveform}
+                  duration={currentSongData.song.data.duration}
                   volume={volume}
                 />
                 <Stack spacing={2} direction="row" sx={{ my: 3, width: 300 }}>
@@ -149,7 +212,7 @@ const Vote: React.FC = () => {
                 <button
                   key={`vote-button-${key}`}
                   className={`rounded-full text-4xl size-24 px-5 mr-10 ${
-                    vote === key
+                    currentVote === key
                       ? "bg-pink-500 text-white"
                       : "bg-slate-100 text-black"
                   }`}
