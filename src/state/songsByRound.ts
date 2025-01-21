@@ -26,7 +26,7 @@ const getRound = createAsyncThunk<
     ).data;
     return { round: id, songs };
   } catch (err) {
-    return thunkAPI.rejectWithValue("Get vote data request failed");
+    return thunkAPI.rejectWithValue("Get song list request failed");
   }
 });
 
