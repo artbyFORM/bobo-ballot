@@ -87,7 +87,7 @@ const getBallotData = createAsyncThunk<
         id: song.song_id,
         votesByRound,
         comments: song.comments,
-        disqualified: song.disqualified,
+        disqualified: song.disqualified || false,
       };
     }
     return songs;
