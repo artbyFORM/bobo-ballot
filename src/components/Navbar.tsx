@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 
@@ -9,9 +9,11 @@ import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
 import Brightness4Icon from "@mui/icons-material/Brightness4";
 import Brightness7Icon from "@mui/icons-material/Brightness7";
+import SettingsIcon from "@mui/icons-material/Settings";
 
 import { useTheme } from "../ThemeContext";
 import { selectNext } from "../state/songsByRound";
+import Settings from "./Settings";
 
 const StyledLink = styled(Link)`
   text-decoration: none;
@@ -20,6 +22,7 @@ const StyledLink = styled(Link)`
 
 const Navbar: React.FC = () => {
   const { toggleTheme, isDarkMode } = useTheme();
+  const [showSettings, setShowSettings] = useState<boolean>(false);
 
   const nextUnvoted = useSelector(selectNext({ unvoted: true }));
 
@@ -45,14 +48,20 @@ const Navbar: React.FC = () => {
             </StyledLink>
           )}
         </div>
-        <IconButton onClick={toggleTheme}>
-          {isDarkMode ? (
-            <Brightness4Icon color="secondary" />
-          ) : (
-            <Brightness7Icon color="secondary" />
-          )}
-        </IconButton>
+        <div>
+          <IconButton onClick={toggleTheme}>
+            {isDarkMode ? (
+              <Brightness4Icon color="secondary" />
+            ) : (
+              <Brightness7Icon color="secondary" />
+            )}
+          </IconButton>
+          <IconButton onClick={() => setShowSettings(true)}>
+            <SettingsIcon color="secondary" />
+          </IconButton>
+        </div>
       </Toolbar>
+      <Settings open={showSettings} close={() => setShowSettings(false)} />
     </AppBar>
   );
 };

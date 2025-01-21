@@ -7,23 +7,22 @@ interface Settings {
 }
 
 /// ACTIONS
-const changeSettings = createAction("changeSettings", (v: any) => {
-  localStorage.setItem("bobo-ballot-settings", JSON.stringify(v));
-  return v;
-});
+const changeSettings = createAction<object>("changeSettings");
 
 /// REDUCER
 const initialState = {
-  voter_id: "abby",
+  voter_id: null,
   round: 1,
 } satisfies Settings as Settings;
 
 const settingsReducer = createReducer(initialState, (builder) => {
   builder.addCase(changeSettings, (state, action) => {
-    return {
+    const newState = {
       ...state,
-      ...action,
+      ...action.payload,
     };
+    localStorage.setItem("bobo-ballot-settings", JSON.stringify(newState));
+    return newState;
   });
 });
 

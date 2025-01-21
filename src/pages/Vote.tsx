@@ -108,7 +108,7 @@ const Vote: React.FC = () => {
           <div className="flex justify-center items-center p-15 w-full h-full">
             <div className="flex flex-col items-center space-y-15">
               <h1 className="text-xl font-bold">{`${positionInRound + 1}/${
-                songsInRound.length
+                songsInRound?.length
               }`}</h1>
               <h1 className="text-4xl font-extrabold pt-5 pb-5">
                 {songData.title}
