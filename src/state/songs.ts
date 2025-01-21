@@ -18,10 +18,18 @@ interface VoteMap {
   };
 }
 
+interface Comment {
+  id: number;
+  voter_id: string;
+  message: string;
+  created_at: string;
+}
+
 interface Song {
   id: number;
   metadata?: SongMetadata;
   votesByRound: VoteMap;
+  comments: Comment[];
 }
 
 interface Songs {
@@ -36,6 +44,11 @@ interface VotePayload {
     voter_id: string;
     created_at: string;
   };
+}
+
+interface CommentPayload {
+  song_id: number;
+  comment: Comment;
 }
 
 /// ACTIONS
@@ -67,6 +80,7 @@ const getBallotData = createAsyncThunk<
       songs[song.song_id] = {
         id: song.song_id,
         votesByRound,
+        comments: song.comments,
       };
     }
     return songs;
@@ -159,6 +173,47 @@ const vote = createAsyncThunk<
   }
 });
 
+const comment = createAsyncThunk<
+  CommentPayload,
+  { id: number; message: string },
+  { state: RootState; serializedErrorType: string }
+>("comment", async (comment, thunkAPI) => {
+  const adminKey = localStorage.getItem("adminKey");
+  if (!adminKey)
+    return thunkAPI.rejectWithValue("Admin key is not configured!");
+  try {
+    const settings = thunkAPI.getState().settings;
+    if (!settings.voter_id)
+      return thunkAPI.rejectWithValue(
+        "You must configure a voter ID in settings!"
+      );
+    const comment_data = {
+      message: comment.message,
+      voter_id: settings.voter_id,
+    };
+    const res = await axios.post(
+      `${apiRoot}/ballot/${comment.id}/comment`,
+      comment_data,
+      {
+        headers: {
+          Authorization: "Bearer " + adminKey,
+        },
+      }
+    );
+    if (!res.data.success) return thunkAPI.rejectWithValue(res.data.message);
+    return {
+      song_id: comment.id,
+      comment: {
+        ...comment_data,
+        id: res.data.id,
+        created_at: new Date().toString(),
+      },
+    };
+  } catch (err) {
+    return thunkAPI.rejectWithValue("Comment request failed");
+  }
+});
+
 /// REDUCER
 const initialState = {} satisfies Songs as Songs;
 
@@ -178,6 +233,7 @@ const songsReducer = createReducer(initialState, (builder) => {
         id: action.payload.song_id,
         metadata: action.payload.song,
         votesByRound: { 1: {}, 2: {} },
+        comments: [],
       };
     } else {
       state[action.payload.song_id].metadata = action.payload.song;
@@ -190,7 +246,21 @@ const songsReducer = createReducer(initialState, (builder) => {
       ] = action.payload.vote.vote;
     }
   });
+  builder.addCase(comment.fulfilled, (state, action) => {
+    if (state[action.payload.song_id]) {
+      if (
+        !state[action.payload.song_id].comments.find(
+          (i) => i.id === action.payload.comment.id
+        )
+      ) {
+        state[action.payload.song_id].comments = [
+          action.payload.comment,
+          ...state[action.payload.song_id].comments,
+        ];
+      }
+    }
+  });
 });
 
-export { getBallotData, getSong, vote };
+export { getBallotData, getSong, vote, comment };
 export default songsReducer;

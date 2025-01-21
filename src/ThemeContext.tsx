@@ -39,7 +39,10 @@ const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
         palette: {
           mode: isDarkMode ? "dark" : "light",
           primary: {
-            main: "#FFFFFF",
+            main: "#ed64a6",
+          },
+          secondary: {
+            main: "#ffffff",
           },
         },
       }),
