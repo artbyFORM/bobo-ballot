@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
@@ -8,7 +8,8 @@ import Vote from "./pages/Vote";
 import ThemeProvider from "./ThemeContext";
 import Snackbar, { SnackbarCloseReason } from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
-import { RootState } from "./state/store";
+import { AppDispatch, RootState } from "./state/store";
+import { getBallotData } from "./state/songs";
 
 const App: React.FC = () => {
   const [open, setOpen] = useState(false);
@@ -26,6 +27,11 @@ const App: React.FC = () => {
     console.log(error);
     if (error) setOpen(true);
   }, [error]);
+
+  const dispatch: AppDispatch = useDispatch();
+  useEffect(() => {
+    dispatch(getBallotData());
+  }, []);
 
   return (
     <ThemeProvider>

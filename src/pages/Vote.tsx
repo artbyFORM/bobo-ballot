@@ -15,16 +15,20 @@ import Box from "@mui/material/Box";
 
 import { AppDispatch, RootState } from "../state/store";
 import { getSong, vote } from "../state/songs";
+import { useTheme } from "../ThemeContext";
+
+const votesByRound = [[], [1, 2, 3], [1, 2, 3, 4, 5]];
 
 const Vote: React.FC = () => {
   const totalRows = 562; // hard coded for now
+  const { isDarkMode } = useTheme();
 
   const [volume, setVolume] = useState<number>(1);
 
   const id = Number(useParams().id);
   const navigate = useNavigate();
 
-  const songData = useSelector((state: RootState) => state.songs[id]);
+  const songData = useSelector((state: RootState) => state.songs[id]?.metadata);
   const currentVote = useSelector((state: RootState) =>
     state.settings.voter_id
       ? state.songs[id]?.votesByRound[state.settings.round][
@@ -32,8 +36,8 @@ const Vote: React.FC = () => {
         ]
       : 0
   );
-  const validVoteKeys = useSelector((state: RootState) =>
-    state.settings.round === 1 ? [1, 2, 3] : [1, 2, 3, 4, 5]
+  const validVoteKeys = useSelector(
+    (state: RootState) => votesByRound[state.settings.round]
   );
 
   const dispatch: AppDispatch = useDispatch();
@@ -107,7 +111,7 @@ const Vote: React.FC = () => {
                     aria-label="Volume"
                     value={volume}
                     onChange={onVolumeChange}
-                    sx={{ color: "black", width: 300 }}
+                    sx={{ color: isDarkMode ? "white" : "black", width: 300 }}
                   />
                   <VolumeUp />
                 </Stack>

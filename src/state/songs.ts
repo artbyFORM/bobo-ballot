@@ -11,13 +11,16 @@ interface SongMetadata {
   audio: string;
 }
 
-interface Song extends SongMetadata {
-  id: number;
-  votesByRound: {
-    [key: string]: {
-      [key: string]: number;
-    };
+interface VoteMap {
+  [key: string]: {
+    [key: string]: number;
   };
+}
+
+interface Song {
+  id: number;
+  metadata?: SongMetadata;
+  votesByRound: VoteMap;
 }
 
 interface Songs {
@@ -35,6 +38,42 @@ interface VotePayload {
 }
 
 /// ACTIONS
+const getBallotData = createAsyncThunk<
+  Songs,
+  undefined,
+  { serializedErrorType: string }
+>("getBallotData", async (id, thunkAPI) => {
+  const adminKey = process.env.REACT_APP_ADMIN_KEY;
+  if (!adminKey)
+    return thunkAPI.rejectWithValue("Admin key is not configured!");
+  try {
+    const ballotData = (
+      await axios(`https://api.submit.artbyform.com/ballot`, {
+        headers: {
+          Authorization: "Bearer " + process.env.REACT_APP_ADMIN_KEY,
+        },
+      })
+    ).data;
+    let songs: Songs = {};
+    for (let song of ballotData) {
+      let votesByRound: VoteMap = { 1: {}, 2: {} };
+      for (let vote of song.votes.sort(
+        (a: any, b: any) =>
+          new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+      )) {
+        votesByRound[vote.round][vote.voter_id] = Number(vote.vote);
+      }
+      songs[song.song_id] = {
+        id: song.song_id,
+        votesByRound,
+      };
+    }
+    return songs;
+  } catch (err) {
+    return thunkAPI.rejectWithValue("Get vote data request failed");
+  }
+});
+
 const getSong = createAsyncThunk<
   { song_id: number; song: SongMetadata },
   number,
@@ -121,18 +160,24 @@ const vote = createAsyncThunk<
 const initialState = {} satisfies Songs as Songs;
 
 const songsReducer = createReducer(initialState, (builder) => {
+  builder.addCase(getBallotData.fulfilled, (state, action) => {
+    for (let id in action.payload) {
+      if (state[id]) {
+        state[id].votesByRound = action.payload[id].votesByRound;
+      } else {
+        state[id] = action.payload[id];
+      }
+    }
+  });
   builder.addCase(getSong.fulfilled, (state, action) => {
     if (!state[action.payload.song_id]) {
       state[action.payload.song_id] = {
         id: action.payload.song_id,
-        ...action.payload.song,
+        metadata: action.payload.song,
         votesByRound: { 1: {}, 2: {} },
       };
     } else {
-      state[action.payload.song_id] = {
-        ...state[action.payload.song_id],
-        ...action.payload.song,
-      };
+      state[action.payload.song_id].metadata = action.payload.song;
     }
   });
   builder.addCase(vote.fulfilled, (state, action) => {
@@ -144,5 +189,5 @@ const songsReducer = createReducer(initialState, (builder) => {
   });
 });
 
-export { getSong, vote };
+export { getBallotData, getSong, vote };
 export default songsReducer;
