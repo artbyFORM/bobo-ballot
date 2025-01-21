@@ -17,6 +17,7 @@ import { AppDispatch, RootState } from "../state/store";
 import { getSong, vote } from "../state/songs";
 import { useTheme } from "../ThemeContext";
 import { getRound } from "../state/songsByRound";
+import Comments from "../components/Comments";
 
 const votesByRound = [[], [1, 2, 3], [1, 2, 3, 4, 5]];
 
@@ -98,7 +99,7 @@ const Vote: React.FC = () => {
             <ArrowBackIcon />
           </IconButton>
         )}
-        {(!songData || !positionInRound) && (
+        {(!songData || !currentRound) && (
           <h1 className="text-xl font-bold">Loading...</h1>
         )}
         {songData && (
@@ -171,6 +172,7 @@ const Vote: React.FC = () => {
           </IconButton>
         )}
       </div>
+      <Comments id={id} />
     </div>
   );
 };

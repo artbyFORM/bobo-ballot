@@ -42,11 +42,15 @@ const Navbar: React.FC = () => {
             className="mr-3 size-8 drop-shadow-lg"
           />
           <StyledLink to="/">
-            <Button className="text-white">Home</Button>
+            <Button color="secondary" className="text-white">
+              Home
+            </Button>
           </StyledLink>
           {nextUnvoted && (
             <StyledLink to={"/vote/" + nextUnvoted}>
-              <Button className="text-white">Vote</Button>
+              <Button color="secondary" className="text-white">
+                Vote
+              </Button>
             </StyledLink>
           )}
         </div>

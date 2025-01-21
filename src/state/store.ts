@@ -21,6 +21,13 @@ const socketMiddleware = (storeAPI: MiddlewareAPI) => {
     });
   });
 
+  socket.on("comment", (message) => {
+    storeAPI.dispatch({
+      type: "comment/fulfilled",
+      payload: message,
+    });
+  });
+
   return (next: any) => (action: any) => {
     return next(action);
   };
