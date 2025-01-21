@@ -16,6 +16,8 @@ import Snackbar, { SnackbarCloseReason } from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 import { AppDispatch, RootState } from "./state/store";
 import { getBallotData } from "./state/songs";
+import { changeSettings } from "./state/settings";
+import { getRound } from "./state/songsByRound";
 
 const Login: React.FC = () => {
   const id = useParams().id;
@@ -41,6 +43,7 @@ const App: React.FC = () => {
   };
 
   const error = useSelector((state: RootState) => state.error);
+  const round = useSelector((state: RootState) => state.settings.round);
 
   useEffect(() => {
     if (error) setOpen(true);
@@ -48,8 +51,16 @@ const App: React.FC = () => {
 
   const dispatch: AppDispatch = useDispatch();
   useEffect(() => {
+    const settings = localStorage.getItem("bobo-ballot-settings");
+    if (settings) {
+      dispatch(changeSettings(JSON.parse(settings)));
+    }
     dispatch(getBallotData());
   }, [dispatch]);
+
+  useEffect(() => {
+    dispatch(getRound(round));
+  }, [dispatch, round]);
 
   return (
     <ThemeProvider>

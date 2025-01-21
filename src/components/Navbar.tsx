@@ -8,6 +8,8 @@ import { Link } from "react-router-dom";
 import { useTheme } from "../ThemeContext";
 import Brightness4Icon from "@mui/icons-material/Brightness4";
 import Brightness7Icon from "@mui/icons-material/Brightness7";
+import { useSelector } from "react-redux";
+import { RootState } from "../state/store";
 
 const StyledLink = styled(Link)`
   text-decoration: none;
@@ -16,6 +18,19 @@ const StyledLink = styled(Link)`
 
 const Navbar: React.FC = () => {
   const { toggleTheme, isDarkMode } = useTheme();
+
+  const settings = useSelector((state: RootState) => state.settings);
+  const songs = useSelector((state: RootState) => state.songs);
+  const currentRound = useSelector(
+    (state: RootState) => state.songsByRound[state.settings.round]
+  );
+
+  let nextUnvoted;
+  if (settings.voter_id && currentRound) {
+    nextUnvoted = currentRound.find(
+      (id) => !songs[id]?.votesByRound[settings.round][settings.voter_id || ""]
+    );
+  }
 
   return (
     <AppBar position="static" elevation={0}>
@@ -29,9 +44,11 @@ const Navbar: React.FC = () => {
           <StyledLink to="/">
             <Button className="text-white">Home</Button>
           </StyledLink>
-          <StyledLink to="/vote/17">
-            <Button className="text-white">Vote</Button>
-          </StyledLink>
+          {nextUnvoted && (
+            <StyledLink to={"/vote/" + nextUnvoted}>
+              <Button className="text-white">Vote</Button>
+            </StyledLink>
+          )}
         </div>
 
         <IconButton onClick={toggleTheme}>
