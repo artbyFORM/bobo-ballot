@@ -43,14 +43,14 @@ const getBallotData = createAsyncThunk<
   undefined,
   { serializedErrorType: string }
 >("getBallotData", async (id, thunkAPI) => {
-  const adminKey = process.env.REACT_APP_ADMIN_KEY;
+  const adminKey = localStorage.getItem("adminKey");
   if (!adminKey)
     return thunkAPI.rejectWithValue("Admin key is not configured!");
   try {
     const ballotData = (
       await axios(`https://api.submit.artbyform.com/ballot`, {
         headers: {
-          Authorization: "Bearer " + process.env.REACT_APP_ADMIN_KEY,
+          Authorization: "Bearer " + adminKey,
         },
       })
     ).data;
@@ -79,14 +79,14 @@ const getSong = createAsyncThunk<
   number,
   { serializedErrorType: string }
 >("getSong", async (id, thunkAPI) => {
-  const adminKey = process.env.REACT_APP_ADMIN_KEY;
+  const adminKey = localStorage.getItem("adminKey");
   if (!adminKey)
     return thunkAPI.rejectWithValue("Admin key is not configured!");
   try {
     const songData = (
       await axios(`https://api.submit.artbyform.com/admin/song/${id}`, {
         headers: {
-          Authorization: "Bearer " + process.env.REACT_APP_ADMIN_KEY,
+          Authorization: "Bearer " + adminKey,
         },
       })
     ).data.data;
@@ -122,7 +122,7 @@ const vote = createAsyncThunk<
   { id: number; vote: number },
   { state: RootState; serializedErrorType: string }
 >("vote", async (vote, thunkAPI) => {
-  const adminKey = process.env.REACT_APP_ADMIN_KEY;
+  const adminKey = localStorage.getItem("adminKey");
   if (!adminKey)
     return thunkAPI.rejectWithValue("Admin key is not configured!");
   try {

@@ -44,7 +44,7 @@ const Vote: React.FC = () => {
   const submitVote = (v: number) => dispatch(vote({ id, vote: v }));
   useEffect(() => {
     dispatch(getSong(id));
-  }, [id]);
+  }, [id, dispatch]);
 
   // Handle keyboard input
   useEffect(() => {
@@ -60,7 +60,8 @@ const Vote: React.FC = () => {
     return () => {
       document.removeEventListener("keydown", handleKeyPress);
     };
-  }, [currentVote]);
+    // eslint-disable-next-line
+  }, [currentVote, validVoteKeys]);
 
   const onVolumeChange = (event: Event, value: number | number[]) => {
     const newVolume = Array.isArray(value) ? value[0] : value;
