@@ -16,6 +16,7 @@ import Box from "@mui/material/Box";
 import { AppDispatch, RootState } from "../state/store";
 import { getSong, vote } from "../state/songs";
 import { useTheme } from "../ThemeContext";
+import { getRound } from "../state/songsByRound";
 
 const votesByRound = [[], [1, 2, 3], [1, 2, 3, 4, 5]];
 
@@ -36,6 +37,7 @@ const Vote: React.FC = () => {
         ]
       : 0
   );
+  const round = useSelector((state: RootState) => state.settings.round);
   const currentRound = useSelector(
     (state: RootState) => state.songsByRound[state.settings.round]
   );
@@ -50,8 +52,12 @@ const Vote: React.FC = () => {
   const submitVote = (v: number) => dispatch(vote({ id, vote: v }));
   useEffect(() => {
     if (!songData) dispatch(getSong(id));
-    // preload the next song
-    dispatch(getSong(currentRound[positionInRound + 1]));
+    // preload the next song, or refresh the round if we're at the end
+    if (currentRound[currentRound.length - 1] === id) {
+      dispatch(getRound(round));
+    } else {
+      dispatch(getSong(currentRound[positionInRound + 1]));
+    }
   }, [id, dispatch]);
 
   // Handle keyboard input
