@@ -1,6 +1,7 @@
 import { createAsyncThunk, createReducer } from "@reduxjs/toolkit";
 import { RootState } from "./store";
 import axios from "axios";
+import apiRoot from "../apiRoot";
 
 /// SHAPES
 interface SongMetadata {
@@ -48,7 +49,7 @@ const getBallotData = createAsyncThunk<
     return thunkAPI.rejectWithValue("Admin key is not configured!");
   try {
     const ballotData = (
-      await axios(`https://api.submit.artbyform.com/ballot`, {
+      await axios(`${apiRoot}/ballot`, {
         headers: {
           Authorization: "Bearer " + adminKey,
         },
@@ -84,7 +85,7 @@ const getSong = createAsyncThunk<
     return thunkAPI.rejectWithValue("Admin key is not configured!");
   try {
     const songData = (
-      await axios(`https://api.submit.artbyform.com/admin/song/${id}`, {
+      await axios(`${apiRoot}/admin/song/${id}`, {
         headers: {
           Authorization: "Bearer " + adminKey,
         },
@@ -136,14 +137,16 @@ const vote = createAsyncThunk<
       round: settings.round,
       voter_id: settings.voter_id,
     };
-    // todo submit
-    /*
-        const res = await axios.post(
-      `https://api.submit.artbyform.com/ballot/${id}/vote`,
-      voteObj,
-      { validateStatus: () => true }
+    const res = await axios.post(
+      `${apiRoot}/ballot/${vote.id}/vote`,
+      vote_data,
+      {
+        headers: {
+          Authorization: "Bearer " + adminKey,
+        },
+      }
     );
-    */
+    if (!res.data.success) return thunkAPI.rejectWithValue(res.data.message);
     return {
       song_id: vote.id,
       vote: {
