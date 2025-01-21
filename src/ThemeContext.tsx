@@ -24,10 +24,13 @@ export const useTheme = (): ThemeContextType => {
 const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(
+    Boolean(localStorage.getItem("isDarkMode"))
+  );
 
   const toggleTheme = () => {
     setIsDarkMode(!isDarkMode);
+    localStorage.setItem("isDarkMode", String(!isDarkMode));
   };
 
   const theme = useMemo<Theme>(

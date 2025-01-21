@@ -3,21 +3,18 @@ import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
-import { makeStyles } from "@mui/styles";
+import { styled } from "@mui/material/styles";
 import { Link } from "react-router-dom";
 import { useTheme } from "../ThemeContext";
 import Brightness4Icon from "@mui/icons-material/Brightness4";
 import Brightness7Icon from "@mui/icons-material/Brightness7";
 
-const useStyles = makeStyles(() => ({
-  link: {
-    textDecoration: "none",
-    color: "inherit",
-  },
-}));
+const StyledLink = styled(Link)`
+  text-decoration: none;
+  color: inherit;
+`;
 
 const Navbar: React.FC = () => {
-  const classes = useStyles();
   const { toggleTheme, isDarkMode } = useTheme();
 
   return (
@@ -29,12 +26,12 @@ const Navbar: React.FC = () => {
             alt=""
             className="mr-3 size-8 drop-shadow-lg"
           />
-          <Link to="/" className={classes.link}>
+          <StyledLink to="/">
             <Button className="text-white">Home</Button>
-          </Link>
-          <Link to="/vote" className={classes.link}>
+          </StyledLink>
+          <StyledLink to="/vote/17">
             <Button className="text-white">Vote</Button>
-          </Link>
+          </StyledLink>
         </div>
 
         <IconButton onClick={toggleTheme}>
