@@ -1,12 +1,7 @@
 # .gitignore
 
-# Node.js
-/frontend/node_modules
-/frontend/build
-
-# Go
-/backend/bin
-/backend/pkg
+node_modules
+build
 
 # Logs
 logs
