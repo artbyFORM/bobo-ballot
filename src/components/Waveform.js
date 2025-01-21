@@ -17,7 +17,6 @@ const formWaveSurferOptions = (ref) => ({
   responsive: true,
   height: 100,
   normalize: true,
-  minPxPerSec: 3,
   pixelRatio: 1,
   backend: "MediaElement",
   partialRender: true,
@@ -46,7 +45,7 @@ export default function Waveform({ url, waveform, duration, volume }) {
       }
 
       try {
-        await wavesurfer.current.load(url, waveform);
+        await wavesurfer.current.load(url, [...waveform]);
         if (wavesurfer.current) {
           wavesurfer.current.setVolume(volume);
           wavesurfer.current.on("play", () => {
