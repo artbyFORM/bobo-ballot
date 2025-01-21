@@ -16,7 +16,7 @@ import Box from "@mui/material/Box";
 import { AppDispatch, RootState } from "../state/store";
 import { getSong, vote } from "../state/songs";
 import { useTheme } from "../ThemeContext";
-import { getRound } from "../state/songsByRound";
+import { getRound, selectNext } from "../state/songsByRound";
 import Comments from "../components/Comments";
 
 const votesByRound = [[], [1, 2, 3], [1, 2, 3, 4, 5]];
@@ -47,6 +47,8 @@ const Vote: React.FC = () => {
   );
 
   const positionInRound = currentRound?.indexOf(id);
+  const prev = useSelector(selectNext({ before: id }));
+  const next = useSelector(selectNext({ after: id }));
 
   // ACTIONS
   const dispatch: AppDispatch = useDispatch();
@@ -55,12 +57,13 @@ const Vote: React.FC = () => {
     if (!songData) dispatch(getSong(id));
     // preload the next song, or refresh the round if we're at the end
     if (currentRound) {
-      if (currentRound[currentRound.length - 1] === id) {
+      if (!next) {
         dispatch(getRound(round));
       } else {
-        dispatch(getSong(currentRound[positionInRound + 1]));
+        dispatch(getSong(next));
       }
     }
+    // eslint-disable-next-line
   }, [id, dispatch]);
 
   // Handle keyboard input
@@ -91,10 +94,8 @@ const Vote: React.FC = () => {
         {currentRound && (
           <IconButton
             className="size-5 ml-10"
-            onClick={() =>
-              navigate("/vote/" + currentRound[positionInRound - 1])
-            }
-            disabled={id === 1}
+            onClick={() => navigate("/vote/" + prev)}
+            disabled={!prev}
           >
             <ArrowBackIcon />
           </IconButton>
@@ -163,10 +164,8 @@ const Vote: React.FC = () => {
         {currentRound && (
           <IconButton
             className="size-5 mr-10"
-            onClick={() =>
-              navigate("/vote/" + currentRound[positionInRound + 1])
-            }
-            disabled={id === currentRound[currentRound.length - 1]}
+            onClick={() => navigate("/vote/" + next)}
+            disabled={!next}
           >
             <ArrowForwardIcon />
           </IconButton>

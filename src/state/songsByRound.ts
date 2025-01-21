@@ -1,6 +1,7 @@
 import { createAsyncThunk, createReducer } from "@reduxjs/toolkit";
 import axios from "axios";
 import apiRoot from "../apiRoot";
+import { RootState } from "./store";
 
 /// SHAPES
 interface SongsByRound {
@@ -39,5 +40,40 @@ const songsByRoundReducer = createReducer(initialState, (builder) => {
   });
 });
 
-export { getRound };
+/// SELECTOR
+const selectNext =
+  ({
+    after,
+    before,
+    unvoted,
+  }: {
+    after?: number;
+    before?: number;
+    unvoted?: boolean;
+  }) =>
+  (state: RootState) => {
+    const currentRound = state.songsByRound[state.settings.round];
+    const condition = (id: number, index: number) => {
+      let condition =
+        state.songs && state.songs[id] && !state.songs[id].disqualified;
+      if (condition && after) {
+        condition = index > currentRound.indexOf(after);
+      }
+      if (condition && before) {
+        condition = index < currentRound.indexOf(before);
+      }
+      if (condition && unvoted) {
+        condition =
+          !state.songs[id]?.votesByRound[state.settings.round][
+            state.settings.voter_id || ""
+          ];
+      }
+      return condition;
+    };
+    return before
+      ? currentRound?.findLast(condition)
+      : currentRound?.find(condition);
+  };
+
+export { getRound, selectNext };
 export default songsByRoundReducer;

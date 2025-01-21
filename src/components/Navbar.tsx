@@ -10,6 +10,7 @@ import Brightness4Icon from "@mui/icons-material/Brightness4";
 import Brightness7Icon from "@mui/icons-material/Brightness7";
 import { useSelector } from "react-redux";
 import { RootState } from "../state/store";
+import { selectNext } from "../state/songsByRound";
 
 const StyledLink = styled(Link)`
   text-decoration: none;
@@ -19,18 +20,7 @@ const StyledLink = styled(Link)`
 const Navbar: React.FC = () => {
   const { toggleTheme, isDarkMode } = useTheme();
 
-  const settings = useSelector((state: RootState) => state.settings);
-  const songs = useSelector((state: RootState) => state.songs);
-  const currentRound = useSelector(
-    (state: RootState) => state.songsByRound[state.settings.round]
-  );
-
-  let nextUnvoted;
-  if (settings.voter_id && currentRound) {
-    nextUnvoted = currentRound.find(
-      (id) => !songs[id]?.votesByRound[settings.round][settings.voter_id || ""]
-    );
-  }
+  const nextUnvoted = useSelector(selectNext({ unvoted: true }));
 
   return (
     <AppBar position="static" elevation={0}>
