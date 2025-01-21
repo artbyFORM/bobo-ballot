@@ -70,6 +70,9 @@ const Vote: React.FC = () => {
   // Handle keyboard input
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
+      if (event.key === "Enter") {
+        navigate("/vote/" + next);
+      }
       const key = Number(event.key);
       if (validVoteKeys.includes(key) && key !== currentVote) {
         submitVote(key);

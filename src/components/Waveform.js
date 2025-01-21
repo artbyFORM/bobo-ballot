@@ -126,6 +126,25 @@ export default function Waveform({ url, waveform, duration, volume }) {
     }
   };
 
+  useEffect(() => {
+    const handleKeyPress = (event) => {
+      if (event.key === " ") {
+        handlePlayPause();
+      } else if (event.key === "ArrowRight") {
+        handleSkipForward();
+      } else if (event.key === "ArrowLeft") {
+        handleSkipBack();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyPress);
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyPress);
+    };
+    // eslint-disable-next-line
+  }, []);
+
   function formatTime(seconds) {
     seconds = Math.floor(seconds); // truncate to nearest second
     let date = new Date(0);
