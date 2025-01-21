@@ -19,7 +19,7 @@ import { getSong, vote } from "../state/songs";
 const Vote: React.FC = () => {
   const totalRows = 562; // hard coded for now
 
-  const [volume, setVolume] = useState<number>(0.5);
+  const [volume, setVolume] = useState<number>(1);
 
   const id = Number(useParams().id);
   const navigate = useNavigate();

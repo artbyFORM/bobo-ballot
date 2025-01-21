@@ -2,7 +2,7 @@ import { createAsyncThunk, createReducer } from "@reduxjs/toolkit";
 import { RootState } from "./store";
 import axios from "axios";
 
-/// STATE FORM
+/// SHAPES
 interface SongMetadata {
   title: string;
   artists: string;
@@ -61,14 +61,6 @@ const getSong = createAsyncThunk<
                     }`,
       })
     ).data.data.track.waveform;
-    // todo submit
-    /*
-        const res = await axios.post(
-      `https://api.submit.artbyform.com/ballot/${id}/vote`,
-      voteObj,
-      { validateStatus: () => true }
-    );
-    */
     return {
       song_id: id,
       song: {

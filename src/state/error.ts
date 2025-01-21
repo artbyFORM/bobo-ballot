@@ -1,6 +1,5 @@
 import { createReducer } from "@reduxjs/toolkit";
 
-/// REDUCER
 const initialState = null as String | null;
 
 const errorReducer = createReducer(initialState, (builder) => {

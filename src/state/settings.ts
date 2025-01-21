@@ -1,6 +1,6 @@
 import { createAction, createReducer } from "@reduxjs/toolkit";
 
-/// STATE FORM
+/// SHAPE
 interface Settings {
   voter_id: string | null;
   round: number;
