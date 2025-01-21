@@ -45,7 +45,7 @@ const Vote: React.FC = () => {
     (state: RootState) => votesByRound[state.settings.round]
   );
 
-  const positionInRound = currentRound.indexOf(id);
+  const positionInRound = currentRound?.indexOf(id);
 
   // ACTIONS
   const dispatch: AppDispatch = useDispatch();
@@ -53,10 +53,12 @@ const Vote: React.FC = () => {
   useEffect(() => {
     if (!songData) dispatch(getSong(id));
     // preload the next song, or refresh the round if we're at the end
-    if (currentRound[currentRound.length - 1] === id) {
-      dispatch(getRound(round));
-    } else {
-      dispatch(getSong(currentRound[positionInRound + 1]));
+    if (currentRound) {
+      if (currentRound[currentRound.length - 1] === id) {
+        dispatch(getRound(round));
+      } else {
+        dispatch(getSong(currentRound[positionInRound + 1]));
+      }
     }
   }, [id, dispatch]);
 
@@ -85,14 +87,20 @@ const Vote: React.FC = () => {
   return (
     <div className="p-10">
       <div className="flex justify-between items-center p-15 w-full h-full">
-        <IconButton
-          className="size-5 ml-10"
-          onClick={() => navigate("/vote/" + currentRound[positionInRound - 1])}
-          disabled={id === 1}
-        >
-          <ArrowBackIcon />
-        </IconButton>
-        {!songData && <h1 className="text-xl font-bold">Loading...</h1>}
+        {currentRound && (
+          <IconButton
+            className="size-5 ml-10"
+            onClick={() =>
+              navigate("/vote/" + currentRound[positionInRound - 1])
+            }
+            disabled={id === 1}
+          >
+            <ArrowBackIcon />
+          </IconButton>
+        )}
+        {(!songData || !positionInRound) && (
+          <h1 className="text-xl font-bold">Loading...</h1>
+        )}
         {songData && (
           <div className="flex justify-center items-center p-15 w-full h-full">
             <div className="flex flex-col items-center space-y-15">
@@ -151,13 +159,17 @@ const Vote: React.FC = () => {
             </div>
           </div>
         )}
-        <IconButton
-          className="size-5 mr-10"
-          onClick={() => navigate("/vote/" + currentRound[positionInRound + 1])}
-          disabled={id === currentRound[currentRound.length - 1]}
-        >
-          <ArrowForwardIcon />
-        </IconButton>
+        {currentRound && (
+          <IconButton
+            className="size-5 mr-10"
+            onClick={() =>
+              navigate("/vote/" + currentRound[positionInRound + 1])
+            }
+            disabled={id === currentRound[currentRound.length - 1]}
+          >
+            <ArrowForwardIcon />
+          </IconButton>
+        )}
       </div>
     </div>
   );
