@@ -5,6 +5,7 @@ import errorReducer from "./error";
 import settingsReducer from "./settings";
 import songsReducer from "./songs";
 import apiRoot from "../apiRoot";
+import songsByRoundReducer from "./songsByRound";
 
 const socketMiddleware = (storeAPI: MiddlewareAPI) => {
   const socket = io(apiRoot, {
@@ -29,6 +30,7 @@ const store = configureStore({
   reducer: {
     error: errorReducer,
     songs: songsReducer,
+    songsByRound: songsByRoundReducer,
     settings: settingsReducer,
   },
   middleware: (defaultMiddleware) =>

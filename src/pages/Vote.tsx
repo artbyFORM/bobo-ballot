@@ -20,14 +20,14 @@ import { useTheme } from "../ThemeContext";
 const votesByRound = [[], [1, 2, 3], [1, 2, 3, 4, 5]];
 
 const Vote: React.FC = () => {
-  const totalRows = 562; // hard coded for now
-  const { isDarkMode } = useTheme();
-
-  const [volume, setVolume] = useState<number>(1);
-
-  const id = Number(useParams().id);
   const navigate = useNavigate();
 
+  // LOCAL STATE
+  const [volume, setVolume] = useState<number>(1);
+  const id = Number(useParams().id);
+
+  // GLOBAL STATE
+  const { isDarkMode } = useTheme();
   const songData = useSelector((state: RootState) => state.songs[id]?.metadata);
   const currentVote = useSelector((state: RootState) =>
     state.settings.voter_id
@@ -36,14 +36,22 @@ const Vote: React.FC = () => {
         ]
       : 0
   );
+  const currentRound = useSelector(
+    (state: RootState) => state.songsByRound[state.settings.round]
+  );
   const validVoteKeys = useSelector(
     (state: RootState) => votesByRound[state.settings.round]
   );
 
+  const positionInRound = currentRound.indexOf(id);
+
+  // ACTIONS
   const dispatch: AppDispatch = useDispatch();
   const submitVote = (v: number) => dispatch(vote({ id, vote: v }));
   useEffect(() => {
-    dispatch(getSong(id));
+    if (!songData) dispatch(getSong(id));
+    // preload the next song
+    dispatch(getSong(currentRound[positionInRound + 1]));
   }, [id, dispatch]);
 
   // Handle keyboard input
@@ -73,7 +81,7 @@ const Vote: React.FC = () => {
       <div className="flex justify-between items-center p-15 w-full h-full">
         <IconButton
           className="size-5 ml-10"
-          onClick={() => navigate("/vote/" + (id - 1))}
+          onClick={() => navigate("/vote/" + currentRound[positionInRound - 1])}
           disabled={id === 1}
         >
           <ArrowBackIcon />
@@ -82,7 +90,9 @@ const Vote: React.FC = () => {
         {songData && (
           <div className="flex justify-center items-center p-15 w-full h-full">
             <div className="flex flex-col items-center space-y-15">
-              <h1 className="text-xl font-bold">{`${id}/${totalRows}`}</h1>
+              <h1 className="text-xl font-bold">{`${positionInRound + 1}/${
+                currentRound.length
+              }`}</h1>
               <h1 className="text-4xl font-extrabold pt-5 pb-5">
                 {songData.title}
               </h1>
@@ -137,8 +147,8 @@ const Vote: React.FC = () => {
         )}
         <IconButton
           className="size-5 mr-10"
-          onClick={() => navigate("/vote/" + (id + 1))}
-          disabled={id === totalRows}
+          onClick={() => navigate("/vote/" + currentRound[positionInRound + 1])}
+          disabled={id === currentRound[currentRound.length - 1]}
         >
           <ArrowForwardIcon />
         </IconButton>
