@@ -30,6 +30,7 @@ interface Song {
   metadata?: SongMetadata;
   votesByRound: VoteMap;
   comments: Comment[];
+  disqualified: boolean;
 }
 
 interface Songs {
@@ -49,6 +50,11 @@ interface VotePayload {
 interface CommentPayload {
   song_id: number;
   comment: Comment;
+}
+
+interface DisqualifyPayload {
+  song_id: number;
+  disqualified: boolean;
 }
 
 /// ACTIONS
@@ -81,6 +87,7 @@ const getBallotData = createAsyncThunk<
         id: song.song_id,
         votesByRound,
         comments: song.comments,
+        disqualified: song.disqualified,
       };
     }
     return songs;
@@ -214,6 +221,39 @@ const comment = createAsyncThunk<
   }
 });
 
+const disqualify = createAsyncThunk<
+  DisqualifyPayload,
+  { id: number; disqualified: boolean },
+  { state: RootState; serializedErrorType: string }
+>("disqualify", async (disqualification, thunkAPI) => {
+  const adminKey = localStorage.getItem("adminKey");
+  if (!adminKey)
+    return thunkAPI.rejectWithValue("Admin key is not configured!");
+  try {
+    const settings = thunkAPI.getState().settings;
+    if (!settings.voter_id)
+      return thunkAPI.rejectWithValue(
+        "You must configure a voter ID in settings!"
+      );
+    const res = await axios.post(
+      `${apiRoot}/ballot/${disqualification.id}/disqualify`,
+      { disqualified: disqualification.disqualified },
+      {
+        headers: {
+          Authorization: "Bearer " + adminKey,
+        },
+      }
+    );
+    if (!res.data.success) return thunkAPI.rejectWithValue(res.data.message);
+    return {
+      song_id: disqualification.id,
+      disqualified: disqualification.disqualified,
+    };
+  } catch (err) {
+    return thunkAPI.rejectWithValue("Disqualify request failed");
+  }
+});
+
 /// REDUCER
 const initialState = {} satisfies Songs as Songs;
 
@@ -234,6 +274,7 @@ const songsReducer = createReducer(initialState, (builder) => {
         metadata: action.payload.song,
         votesByRound: { 1: {}, 2: {} },
         comments: [],
+        disqualified: false,
       };
     } else {
       state[action.payload.song_id].metadata = action.payload.song;
@@ -260,7 +301,12 @@ const songsReducer = createReducer(initialState, (builder) => {
       }
     }
   });
+  builder.addCase(disqualify.fulfilled, (state, action) => {
+    if (state[action.payload.song_id]) {
+      state[action.payload.song_id].disqualified = action.payload.disqualified;
+    }
+  });
 });
 
-export { getBallotData, getSong, vote, comment };
+export { getBallotData, getSong, vote, comment, disqualify };
 export default songsReducer;

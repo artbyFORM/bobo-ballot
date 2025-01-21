@@ -7,10 +7,12 @@ import {
   Button,
   Card,
   CardContent,
+  FormControlLabel,
+  Switch,
   TextField,
   Typography,
 } from "@mui/material";
-import { comment } from "../state/songs";
+import { comment, disqualify } from "../state/songs";
 
 function Comments({ id }: { id: number }) {
   // LOCAL STATE
@@ -18,12 +20,18 @@ function Comments({ id }: { id: number }) {
 
   // GLOBAL STATE
   const comments = useSelector((state: RootState) => state.songs[id]?.comments);
+  const disqualified = useSelector(
+    (state: RootState) => state.songs[id]?.disqualified
+  );
 
   // ACTIONS
   const dispatch: AppDispatch = useDispatch();
   const postComment = () => {
     dispatch(comment({ id, message: text }));
     setText("");
+  };
+  const dispatchDisqualify = () => {
+    dispatch(disqualify({ id, disqualified: !disqualified }));
   };
 
   return (
@@ -40,14 +48,22 @@ function Comments({ id }: { id: number }) {
           onChange={(e) => setText(e.target.value)}
           placeholder="Write a comment..."
         />
-        <Button
-          variant="contained"
-          color="primary"
-          className="float-right"
-          onClick={postComment}
-        >
-          POST COMMENT
-        </Button>
+        <div className="flex justify-between">
+          <FormControlLabel
+            control={
+              <Switch checked={disqualified} onChange={dispatchDisqualify} />
+            }
+            label="Disqualify song"
+          />
+          <Button
+            variant="contained"
+            color="primary"
+            className="float-right"
+            onClick={postComment}
+          >
+            POST COMMENT
+          </Button>
+        </div>
       </div>
       <div className="flex-1">
         {comments?.map((i) => (

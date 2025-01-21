@@ -61,6 +61,7 @@ const Vote: React.FC = () => {
         dispatch(getSong(currentRound[positionInRound + 1]));
       }
     }
+    // eslint-disable-next-line
   }, [id, dispatch]);
 
   // Handle keyboard input

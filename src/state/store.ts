@@ -28,6 +28,13 @@ const socketMiddleware = (storeAPI: MiddlewareAPI) => {
     });
   });
 
+  socket.on("disqualified", (message) => {
+    storeAPI.dispatch({
+      type: "disqualify/fulfilled",
+      payload: message,
+    });
+  });
+
   return (next: any) => (action: any) => {
     return next(action);
   };
