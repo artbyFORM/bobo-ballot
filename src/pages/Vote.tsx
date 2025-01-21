@@ -2,7 +2,6 @@ import IconButton from "@mui/material/IconButton";
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate, useParams } from "react-router";
-import Waveform from "../components/Waveform";
 
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
@@ -13,10 +12,12 @@ import VolumeDown from "@mui/icons-material/VolumeDown";
 import VolumeUp from "@mui/icons-material/VolumeUp";
 import Box from "@mui/material/Box";
 
+import { useTheme } from "../ThemeContext";
 import { AppDispatch, RootState } from "../state/store";
 import { getSong, vote } from "../state/songs";
-import { useTheme } from "../ThemeContext";
 import { getRound, selectNext } from "../state/songsByRound";
+
+import Waveform from "../components/Waveform";
 import Comments from "../components/Comments";
 
 const votesByRound = [[], [1, 2, 3], [1, 2, 3, 4, 5]];
@@ -38,15 +39,15 @@ const Vote: React.FC = () => {
         ]
       : 0
   );
-  const round = useSelector((state: RootState) => state.settings.round);
-  const currentRound = useSelector(
+  const currentRound = useSelector((state: RootState) => state.settings.round);
+  const songsInRound = useSelector(
     (state: RootState) => state.songsByRound[state.settings.round]
   );
   const validVoteKeys = useSelector(
     (state: RootState) => votesByRound[state.settings.round]
   );
 
-  const positionInRound = currentRound?.indexOf(id);
+  const positionInRound = songsInRound?.indexOf(id);
   const prev = useSelector(selectNext({ before: id }));
   const next = useSelector(selectNext({ after: id }));
 
@@ -56,9 +57,9 @@ const Vote: React.FC = () => {
   useEffect(() => {
     if (!songData) dispatch(getSong(id));
     // preload the next song, or refresh the round if we're at the end
-    if (currentRound) {
+    if (songsInRound) {
       if (!next) {
-        dispatch(getRound(round));
+        dispatch(getRound(currentRound));
       } else {
         dispatch(getSong(next));
       }
@@ -91,7 +92,7 @@ const Vote: React.FC = () => {
   return (
     <div className="p-10">
       <div className="flex justify-between items-center p-15 w-full h-full">
-        {currentRound && (
+        {songsInRound && (
           <IconButton
             className="size-5 ml-10"
             onClick={() => navigate("/vote/" + prev)}
@@ -100,14 +101,14 @@ const Vote: React.FC = () => {
             <ArrowBackIcon />
           </IconButton>
         )}
-        {(!songData || !currentRound) && (
+        {(!songData || !songsInRound) && (
           <h1 className="text-xl font-bold">Loading...</h1>
         )}
         {songData && (
           <div className="flex justify-center items-center p-15 w-full h-full">
             <div className="flex flex-col items-center space-y-15">
               <h1 className="text-xl font-bold">{`${positionInRound + 1}/${
-                currentRound.length
+                songsInRound.length
               }`}</h1>
               <h1 className="text-4xl font-extrabold pt-5 pb-5">
                 {songData.title}
@@ -161,7 +162,7 @@ const Vote: React.FC = () => {
             </div>
           </div>
         )}
-        {currentRound && (
+        {songsInRound && (
           <IconButton
             className="size-5 mr-10"
             onClick={() => navigate("/vote/" + next)}

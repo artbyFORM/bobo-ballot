@@ -7,18 +7,20 @@ import {
   useParams,
   useNavigate,
 } from "react-router-dom";
+import Snackbar, { SnackbarCloseReason } from "@mui/material/Snackbar";
+import Alert from "@mui/material/Alert";
+
 import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
 import Vote from "./pages/Vote";
 
 import ThemeProvider from "./ThemeContext";
-import Snackbar, { SnackbarCloseReason } from "@mui/material/Snackbar";
-import Alert from "@mui/material/Alert";
 import { AppDispatch, RootState } from "./state/store";
 import { getBallotData } from "./state/songs";
 import { changeSettings } from "./state/settings";
 import { getRound } from "./state/songsByRound";
 
+// Minimal page, stores login key to local storage
 const Login: React.FC = () => {
   const id = useParams().id;
   const navigate = useNavigate();
@@ -33,8 +35,8 @@ const Login: React.FC = () => {
 };
 
 const App: React.FC = () => {
+  // Global error message
   const [open, setOpen] = useState(false);
-
   const handleClose = (
     event?: React.SyntheticEvent | Event,
     reason?: SnackbarCloseReason
@@ -43,12 +45,11 @@ const App: React.FC = () => {
   };
 
   const error = useSelector((state: RootState) => state.error);
-  const round = useSelector((state: RootState) => state.settings.round);
-
   useEffect(() => {
     if (error) setOpen(true);
   }, [error]);
 
+  // Save settings in local storage
   const dispatch: AppDispatch = useDispatch();
   useEffect(() => {
     const settings = localStorage.getItem("bobo-ballot-settings");
@@ -58,6 +59,8 @@ const App: React.FC = () => {
     dispatch(getBallotData());
   }, [dispatch]);
 
+  // Always fetch the current round whenever it changes
+  const round = useSelector((state: RootState) => state.settings.round);
   useEffect(() => {
     dispatch(getRound(round));
   }, [dispatch, round]);

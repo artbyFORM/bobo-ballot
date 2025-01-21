@@ -1,8 +1,6 @@
 import { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { format } from "date-fns";
-
-import { AppDispatch, RootState } from "../state/store";
 import {
   Button,
   Card,
@@ -12,6 +10,8 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+
+import { AppDispatch, RootState } from "../state/store";
 import { comment, disqualify } from "../state/songs";
 
 function Comments({ id }: { id: number }) {
