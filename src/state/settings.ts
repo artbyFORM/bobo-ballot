@@ -7,7 +7,10 @@ interface Settings {
 }
 
 /// ACTIONS
-const changeSettings = createAction("changeSettings");
+const changeSettings = createAction("changeSettings", (v: any) => {
+  localStorage.setItem("bobo-ballot-settings", JSON.stringify(v));
+  return v;
+});
 
 /// REDUCER
 const initialState = {

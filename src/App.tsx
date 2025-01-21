@@ -16,6 +16,7 @@ import Snackbar, { SnackbarCloseReason } from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 import { AppDispatch, RootState } from "./state/store";
 import { getBallotData } from "./state/songs";
+import { changeSettings } from "./state/settings";
 
 const Login: React.FC = () => {
   const id = useParams().id;
@@ -48,6 +49,10 @@ const App: React.FC = () => {
 
   const dispatch: AppDispatch = useDispatch();
   useEffect(() => {
+    const settings = localStorage.getItem("bobo-ballot-settings");
+    if (settings) {
+      dispatch(changeSettings(JSON.parse(settings)));
+    }
     dispatch(getBallotData());
   }, [dispatch]);
 
