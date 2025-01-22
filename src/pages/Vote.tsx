@@ -73,6 +73,7 @@ const Vote: React.FC = () => {
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
       if (event.key === "Enter") {
+        event.preventDefault();
         navigate("/vote/" + next);
       }
       const key = Number(event.key);
