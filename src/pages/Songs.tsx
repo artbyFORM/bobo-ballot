@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import {
   Card,
   CardActionArea,
+  Chip,
   FormControl,
   ToggleButton,
   ToggleButtonGroup,
@@ -101,6 +102,14 @@ const Songs: React.FC = () => {
                         <div>
                           <h3 className="font-bold">
                             {songData[i].metadata?.title}
+                            {songData[i].disqualified && (
+                              <Chip
+                                label="Disqualified"
+                                color="error"
+                                size="small"
+                                sx={{ marginLeft: "10px" }}
+                              />
+                            )}
                           </h3>
                           {settings.showArtistNames && (
                             <p className="text-sm font-light">
