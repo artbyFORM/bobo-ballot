@@ -46,6 +46,7 @@ function Comments({ id }: { id: number }) {
           multiline
           value={text}
           onChange={(e) => setText(e.target.value)}
+          onKeyDown={(e) => e.stopPropagation()}
           placeholder="Write a comment..."
         />
         <div className="flex justify-between">
