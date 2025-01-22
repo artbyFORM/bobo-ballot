@@ -85,7 +85,7 @@ const Vote: React.FC = () => {
       document.removeEventListener("keydown", handleKeyPress);
     };
     // eslint-disable-next-line
-  }, [currentVote, validVoteKeys]);
+  }, [currentVote, validVoteKeys, next]);
 
   const onVolumeChange = (event: Event, value: number | number[]) => {
     const newVolume = Array.isArray(value) ? value[0] : value;
