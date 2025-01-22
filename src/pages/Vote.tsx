@@ -19,6 +19,7 @@ import { getRound, selectNext } from "../state/songsByRound";
 
 import Waveform from "../components/Waveform";
 import Comments from "../components/Comments";
+import { Link } from "@mui/material";
 
 const votesByRound = [[], [1, 2, 3], [1, 2, 3, 4, 5]];
 
@@ -117,6 +118,24 @@ const Vote: React.FC = () => {
                 {songData.title}
               </h1>
               <h1 className="text-4xl font-light pb-5">{songData.artists}</h1>
+              <h1 className="text-l font-light pb-5">
+                view on:{" "}
+                <Link
+                  sx={{ textDecoration: "none" }}
+                  target="_blank"
+                  href={`https://submit.artbyform.com/admin/music/${id}`}
+                >
+                  submit.artbyform.com
+                </Link>{" "}
+                •{" "}
+                <Link
+                  sx={{ textDecoration: "none" }}
+                  target="_blank"
+                  href={`https://s.wave.ac/form/${songData.waveac}`}
+                >
+                  wave.ac
+                </Link>
+              </h1>
               <Box
                 className="w-900 h-200 pt-5 pb-10"
                 sx={{

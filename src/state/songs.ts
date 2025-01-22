@@ -10,6 +10,7 @@ interface SongMetadata {
   duration: number;
   waveform: [number];
   audio: string;
+  waveac: string;
 }
 
 interface VoteMap {
@@ -130,6 +131,7 @@ const getSong = createAsyncThunk<
         duration: songData.song.data.duration,
         audio: songData.listen,
         waveform: waveData,
+        waveac: `${songData.song.waveac_id}/${songData.song.data.ptoken}`,
       },
     };
   } catch (err) {
