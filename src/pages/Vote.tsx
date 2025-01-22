@@ -40,6 +40,7 @@ const Vote: React.FC = () => {
         ]
       : 0
   );
+  const settings = useSelector((state: RootState) => state.settings);
   const currentRound = useSelector((state: RootState) => state.settings.round);
   const songsInRound = useSelector(
     (state: RootState) => state.songsByRound[state.settings.round]
@@ -117,7 +118,9 @@ const Vote: React.FC = () => {
               <h1 className="text-4xl font-extrabold pt-5 pb-5">
                 {songData.title}
               </h1>
-              <h1 className="text-4xl font-light pb-5">{songData.artists}</h1>
+              {settings.showArtistNames && (
+                <h1 className="text-4xl font-light pb-5">{songData.artists}</h1>
+              )}
               <h1 className="text-l font-light pb-5">
                 view on:{" "}
                 <Link

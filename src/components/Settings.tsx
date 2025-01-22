@@ -12,6 +12,8 @@ import {
   FormControl,
   ToggleButtonGroup,
   ToggleButton,
+  FormControlLabel,
+  Switch,
 } from "@mui/material";
 import { AppDispatch, RootState } from "../state/store";
 import { changeSettings } from "../state/settings";
@@ -68,6 +70,19 @@ function Settings({ open, close }: { open: boolean; close: any }) {
             <ToggleButton value={2}>Round 2</ToggleButton>
           </ToggleButtonGroup>
         </FormControl>
+        <br />
+        <br />
+        <FormControlLabel
+          control={
+            <Switch
+              checked={settings.showArtistNames}
+              onChange={() =>
+                change({ showArtistNames: !settings.showArtistNames })
+              }
+            />
+          }
+          label="Show artist names"
+        />
       </DialogContent>
       <DialogActions>
         <Button onClick={close}>Close</Button>
