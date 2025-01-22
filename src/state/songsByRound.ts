@@ -15,8 +15,7 @@ const getRound = createAsyncThunk<
   { serializedErrorType: string }
 >("getRound", async (id, thunkAPI) => {
   const adminKey = localStorage.getItem("adminKey");
-  if (!adminKey)
-    return thunkAPI.rejectWithValue("Admin key is not configured!");
+  if (!adminKey) return thunkAPI.rejectWithValue("You are not logged in!");
   try {
     const songs = (
       await axios(`${apiRoot}/ballot/round/${id}`, {

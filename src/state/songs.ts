@@ -64,8 +64,7 @@ const getBallotData = createAsyncThunk<
   { serializedErrorType: string }
 >("getBallotData", async (id, thunkAPI) => {
   const adminKey = localStorage.getItem("adminKey");
-  if (!adminKey)
-    return thunkAPI.rejectWithValue("Admin key is not configured!");
+  if (!adminKey) return thunkAPI.rejectWithValue("You are not logged in!");
   try {
     const ballotData = (
       await axios(`${apiRoot}/ballot`, {
@@ -102,8 +101,7 @@ const getSong = createAsyncThunk<
   { serializedErrorType: string }
 >("getSong", async (id, thunkAPI) => {
   const adminKey = localStorage.getItem("adminKey");
-  if (!adminKey)
-    return thunkAPI.rejectWithValue("Admin key is not configured!");
+  if (!adminKey) return thunkAPI.rejectWithValue("You are not logged in!");
   try {
     const songData = (
       await axios(`${apiRoot}/admin/song/${id}`, {
@@ -145,8 +143,7 @@ const vote = createAsyncThunk<
   { state: RootState; serializedErrorType: string }
 >("vote", async (vote, thunkAPI) => {
   const adminKey = localStorage.getItem("adminKey");
-  if (!adminKey)
-    return thunkAPI.rejectWithValue("Admin key is not configured!");
+  if (!adminKey) return thunkAPI.rejectWithValue("You are not logged in!");
   try {
     const settings = thunkAPI.getState().settings;
     if (!settings.voter_id)
@@ -186,8 +183,7 @@ const comment = createAsyncThunk<
   { state: RootState; serializedErrorType: string }
 >("comment", async (comment, thunkAPI) => {
   const adminKey = localStorage.getItem("adminKey");
-  if (!adminKey)
-    return thunkAPI.rejectWithValue("Admin key is not configured!");
+  if (!adminKey) return thunkAPI.rejectWithValue("You are not logged in!");
   try {
     const settings = thunkAPI.getState().settings;
     if (!settings.voter_id)
@@ -227,8 +223,7 @@ const disqualify = createAsyncThunk<
   { state: RootState; serializedErrorType: string }
 >("disqualify", async (disqualification, thunkAPI) => {
   const adminKey = localStorage.getItem("adminKey");
-  if (!adminKey)
-    return thunkAPI.rejectWithValue("Admin key is not configured!");
+  if (!adminKey) return thunkAPI.rejectWithValue("You are not logged in!");
   try {
     const settings = thunkAPI.getState().settings;
     if (!settings.voter_id)
