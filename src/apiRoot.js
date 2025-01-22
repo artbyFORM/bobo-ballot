@@ -1,1 +1,2 @@
-export default "https://api.submit.artbyform.com";
+const root = "https://api.submit.artbyform.com";
+export default root;

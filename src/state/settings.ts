@@ -5,6 +5,7 @@ interface Settings {
   voter_id: string | null;
   round: number;
   showArtistNames: boolean;
+  showOtherVotes: boolean;
 }
 
 /// ACTIONS
@@ -15,6 +16,7 @@ const initialState = {
   voter_id: null,
   round: 1,
   showArtistNames: true,
+  showOtherVotes: true,
 } satisfies Settings as Settings;
 
 const settingsReducer = createReducer(initialState, (builder) => {

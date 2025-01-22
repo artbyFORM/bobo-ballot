@@ -83,6 +83,18 @@ function Settings({ open, close }: { open: boolean; close: any }) {
           }
           label="Show artist names"
         />
+        <br />
+        <FormControlLabel
+          control={
+            <Switch
+              checked={settings.showOtherVotes}
+              onChange={() =>
+                change({ showOtherVotes: !settings.showOtherVotes })
+              }
+            />
+          }
+          label="Show other votes"
+        />
       </DialogContent>
       <DialogActions>
         <Button onClick={close}>Close</Button>

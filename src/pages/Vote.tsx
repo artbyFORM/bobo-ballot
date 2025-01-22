@@ -19,7 +19,7 @@ import { getRound, selectNext } from "../state/songsByRound";
 
 import Waveform from "../components/Waveform";
 import Comments from "../components/Comments";
-import { Link } from "@mui/material";
+import { Chip, Link, Tooltip } from "@mui/material";
 
 const votesByRound = [[], [1, 2, 3], [1, 2, 3, 4, 5]];
 
@@ -39,6 +39,9 @@ const Vote: React.FC = () => {
           state.settings.voter_id
         ]
       : 0
+  );
+  const allVotes = useSelector(
+    (state: RootState) => state.songs[id]?.votesByRound[state.settings.round]
   );
   const settings = useSelector((state: RootState) => state.settings);
   const currentRound = useSelector((state: RootState) => state.settings.round);
@@ -141,7 +144,7 @@ const Vote: React.FC = () => {
                 </Link>
               </h1>
               <Box
-                className="w-900 h-200 pt-5 pb-10"
+                className="w-900 h-200 pt-5 pb-5"
                 sx={{
                   display: "flex",
                   flexDirection: "column",
@@ -170,20 +173,54 @@ const Vote: React.FC = () => {
                   <VolumeUp />
                 </Stack>
               </Box>
-              <div className="flex pb-5 gap-10">
-                {validVoteKeys.map((key) => (
-                  <button
-                    key={`vote-button-${key}`}
-                    className={`rounded-full text-4xl size-24 px-5 ${
-                      currentVote === key
-                        ? "bg-pink-500 text-white"
-                        : "bg-slate-100 text-black"
-                    }`}
-                    onClick={() => submitVote(key)}
-                  >
-                    {key}
-                  </button>
+              {settings.showOtherVotes &&
+                (Object.values(allVotes).length > 0 ? (
+                  <div className="text-neutral-400 text-m font-bold pb-4">
+                    average vote:{" "}
+                    {Number(
+                      (
+                        Object.values(allVotes).reduce((a, b) => a + b, 0) /
+                        Object.values(allVotes).length
+                      ).toFixed(3)
+                    )}
+                  </div>
+                ) : (
+                  <div className="text-neutral-400 text-m font-bold pb-4">
+                    no votes yet
+                  </div>
                 ))}
+              <div className="flex pb-5 gap-10">
+                {validVoteKeys.map((key) => {
+                  let votes = Object.keys(allVotes).filter(
+                    (i) => allVotes[i] === key
+                  );
+                  return (
+                    <div className="flex flex-col">
+                      <button
+                        key={`vote-button-${key}`}
+                        className={`rounded-full text-4xl size-24 px-5 ${
+                          currentVote === key
+                            ? "bg-pink-500 text-white"
+                            : "bg-slate-100 text-black"
+                        }`}
+                        onClick={() => submitVote(key)}
+                      >
+                        {key}
+                      </button>
+                      {settings.showOtherVotes && (
+                        <Tooltip title={`${votes.join(", ")}`}>
+                          <Chip
+                            className="mt-3 self-center"
+                            sx={{ cursor: "default", fontWeight: "bold" }}
+                            label={`${votes.length} vote${
+                              votes.length !== 1 ? "s" : ""
+                            }`}
+                          />
+                        </Tooltip>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             </div>
           </div>
