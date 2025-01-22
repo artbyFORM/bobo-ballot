@@ -3,13 +3,12 @@ import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 
 import { styled } from "@mui/material/styles";
-import AppBar from "@mui/material/AppBar";
-import Toolbar from "@mui/material/Toolbar";
-import Button from "@mui/material/Button";
-import IconButton from "@mui/material/IconButton";
-import Brightness4Icon from "@mui/icons-material/Brightness4";
-import Brightness7Icon from "@mui/icons-material/Brightness7";
-import SettingsIcon from "@mui/icons-material/Settings";
+import { AppBar, Toolbar, Button, IconButton } from "@mui/material";
+import {
+  Brightness4,
+  Brightness7,
+  Settings as SettingsIcon,
+} from "@mui/icons-material";
 
 import { useTheme } from "../ThemeContext";
 import { selectNext } from "../state/songsByRound";
@@ -51,9 +50,9 @@ const Navbar: React.FC = () => {
         <div>
           <IconButton onClick={toggleTheme}>
             {isDarkMode ? (
-              <Brightness4Icon color="secondary" />
+              <Brightness4 color="secondary" />
             ) : (
-              <Brightness7Icon color="secondary" />
+              <Brightness7 color="secondary" />
             )}
           </IconButton>
           <IconButton onClick={() => setShowSettings(true)}>

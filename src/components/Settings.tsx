@@ -25,7 +25,6 @@ function Settings({ open, close }: { open: boolean; close: any }) {
 
   const dispatch: AppDispatch = useDispatch();
   const change = (v: any) => {
-    console.log(v);
     dispatch(changeSettings(v));
   };
 

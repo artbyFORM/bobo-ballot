@@ -1,9 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@mui/base";
-import PlayArrowIcon from "@mui/icons-material/PlayArrow";
-import PauseIcon from "@mui/icons-material/Pause";
-import FastRewindIcon from "@mui/icons-material/FastRewind";
-import FastForwardIcon from "@mui/icons-material/FastForward";
+import { PlayArrow, Pause, FastRewind, FastForward } from "@mui/icons-material";
 import WaveSurfer from "wavesurfer.js";
 import Hover from "wavesurfer.js/dist/plugins/hover.esm.js";
 
@@ -182,23 +179,23 @@ export default function Waveform({ url, waveform, duration, volume }) {
               className="rounded-full text-4xl size-30"
               onClick={handleSkipBack}
             >
-              <FastRewindIcon fontSize="large" />
+              <FastRewind fontSize="large" />
             </Button>
             <Button
               className="rounded-full text-4xl size-30"
               onClick={handlePlayPause}
             >
               {playing ? (
-                <PauseIcon fontSize="large" />
+                <Pause fontSize="large" />
               ) : (
-                <PlayArrowIcon fontSize="large" />
+                <PlayArrow fontSize="large" />
               )}
             </Button>
             <Button
               className="rounded-full text-4xl size-30"
               onClick={handleSkipForward}
             >
-              <FastForwardIcon fontSize="large" />
+              <FastForward fontSize="large" />
             </Button>
           </div>
         </div>

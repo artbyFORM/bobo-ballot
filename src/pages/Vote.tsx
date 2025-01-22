@@ -3,14 +3,13 @@ import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate, useParams } from "react-router";
 
-import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-
-import Stack from "@mui/material/Stack";
-import Slider from "@mui/material/Slider";
-import VolumeDown from "@mui/icons-material/VolumeDown";
-import VolumeUp from "@mui/icons-material/VolumeUp";
-import Box from "@mui/material/Box";
+import { Chip, Link, Tooltip, Stack, Slider, Box } from "@mui/material";
+import {
+  ArrowForward,
+  ArrowBack,
+  VolumeDown,
+  VolumeUp,
+} from "@mui/icons-material";
 
 import { useTheme } from "../ThemeContext";
 import { AppDispatch, RootState } from "../state/store";
@@ -19,7 +18,6 @@ import { getRound, selectNext } from "../state/songsByRound";
 
 import Waveform from "../components/Waveform";
 import Comments from "../components/Comments";
-import { Chip, Link, Tooltip } from "@mui/material";
 
 const votesByRound = [[], [1, 2, 3], [1, 2, 3, 4, 5]];
 
@@ -107,7 +105,7 @@ const Vote: React.FC = () => {
             onClick={() => navigate("/vote/" + prev)}
             disabled={!prev}
           >
-            <ArrowBackIcon />
+            <ArrowBack />
           </IconButton>
         )}
         {(!songData || !songsInRound) && (
@@ -231,7 +229,7 @@ const Vote: React.FC = () => {
             onClick={() => navigate("/vote/" + next)}
             disabled={!next}
           >
-            <ArrowForwardIcon />
+            <ArrowForward />
           </IconButton>
         )}
       </div>
