@@ -1,9 +1,16 @@
-import IconButton from "@mui/material/IconButton";
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate, useParams } from "react-router";
 
-import { Chip, Link, Tooltip, Stack, Slider, Box } from "@mui/material";
+import {
+  Chip,
+  Link,
+  Tooltip,
+  Stack,
+  Slider,
+  Box,
+  IconButton,
+} from "@mui/material";
 import {
   ArrowForward,
   ArrowBack,
@@ -58,7 +65,8 @@ const Vote: React.FC = () => {
   const dispatch: AppDispatch = useDispatch();
   const submitVote = (v: number) => dispatch(vote({ id, vote: v }));
   useEffect(() => {
-    if (!songData) dispatch(getSong(id));
+    if (!songData || !songData.waveform || !songData.audio)
+      dispatch(getSong(id));
     // preload the next song, or refresh the round if we're at the end
     if (songsInRound) {
       if (!next) {
@@ -108,10 +116,11 @@ const Vote: React.FC = () => {
             <ArrowBack />
           </IconButton>
         )}
-        {(!songData || !songsInRound) && (
-          <h1 className="text-xl font-bold">Loading...</h1>
-        )}
-        {songData && (
+        {(!songData ||
+          !songsInRound ||
+          !songData.waveform ||
+          !songData.audio) && <h1 className="text-xl font-bold">Loading...</h1>}
+        {songData && songData.waveform && songData.audio && (
           <div className="flex justify-center items-center p-15 w-full h-full">
             <div className="flex flex-col items-center space-y-15">
               <h1 className="text-xl font-bold">{`${positionInRound + 1}/${

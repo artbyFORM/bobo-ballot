@@ -13,6 +13,7 @@ import Alert from "@mui/material/Alert";
 import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
 import Vote from "./pages/Vote";
+import Songs from "./pages/Songs";
 
 import ThemeProvider from "./ThemeContext";
 import { AppDispatch, RootState } from "./state/store";
@@ -82,6 +83,7 @@ const App: React.FC = () => {
           <Navbar />
           <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/songs" element={<Songs />} />
             <Route path="/vote/:id" element={<Vote />} />
             <Route path="/login/:id" element={<Login />} />
           </Routes>

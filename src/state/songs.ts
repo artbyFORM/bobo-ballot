@@ -8,8 +8,8 @@ interface SongMetadata {
   title: string;
   artists: string;
   duration: number;
-  waveform: [number];
-  audio: string;
+  waveform?: [number];
+  audio?: string;
   waveac: string;
 }
 
@@ -88,6 +88,14 @@ const getBallotData = createAsyncThunk<
         votesByRound,
         comments: song.comments,
         disqualified: song.disqualified || false,
+        metadata: {
+          title: song.song.data.title,
+          artists: song.artists
+            .map((artist: any) => artist.data.name)
+            .join(", "),
+          duration: song.song.data.duration,
+          waveac: `${song.song.waveac_id}/${song.song.data.ptoken}`,
+        },
       };
     }
     return songs;

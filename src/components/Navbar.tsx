@@ -46,6 +46,11 @@ const Navbar: React.FC = () => {
               </Button>
             </StyledLink>
           )}
+          <StyledLink to="/songs">
+            <Button color="secondary" className="text-white">
+              Songs
+            </Button>
+          </StyledLink>
         </div>
         <div>
           <IconButton onClick={toggleTheme}>
