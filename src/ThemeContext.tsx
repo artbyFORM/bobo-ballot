@@ -25,7 +25,7 @@ const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [isDarkMode, setIsDarkMode] = useState(
-    Boolean(localStorage.getItem("isDarkMode"))
+    JSON.parse(localStorage.getItem("isDarkMode") || "false")
   );
 
   const toggleTheme = () => {
