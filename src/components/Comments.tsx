@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { format } from "date-fns";
 import {
@@ -17,6 +17,24 @@ import { comment, disqualify } from "../state/songs";
 function Comments({ id }: { id: number }) {
   // LOCAL STATE
   const [text, setText] = useState<string>("");
+
+  const privateComments = JSON.parse(
+    localStorage.getItem("privateComments") || "{}"
+  );
+  const [privateNote, setPrivateNote] = useState<string>(
+    privateComments[id]?.comment || ""
+  );
+  const [flagged, setFlagged] = useState<boolean>(
+    privateComments[id]?.flagged || false
+  );
+
+  // needed because comments gets rerendered across songs
+  useEffect(() => {
+    setText("");
+    setPrivateNote(privateComments[id]?.comment || "");
+    setFlagged(privateComments[id]?.flagged || false);
+    // eslint-disable-next-line
+  }, [id]);
 
   // GLOBAL STATE
   const comments = useSelector((state: RootState) => state.songs[id]?.comments);
@@ -74,6 +92,52 @@ function Comments({ id }: { id: number }) {
               POST COMMENT
             </Button>
           </div>
+        </form>
+        <form className="mt-10">
+          <TextField
+            className="flex-1 w-full"
+            sx={{ marginBottom: "15px" }}
+            multiline
+            value={privateNote}
+            onKeyDown={(e) => {
+              e.stopPropagation();
+            }}
+            onChange={(e) => {
+              setPrivateNote(e.target.value);
+              localStorage.setItem(
+                "privateComments",
+                JSON.stringify({
+                  ...privateComments,
+                  [id]: {
+                    ...(privateComments[id] || {}),
+                    comment: e.target.value,
+                  },
+                })
+              );
+            }}
+            placeholder="Private note"
+          />
+          <FormControlLabel
+            control={
+              <Switch
+                checked={flagged}
+                onChange={() => {
+                  setFlagged(!flagged);
+                  localStorage.setItem(
+                    "privateComments",
+                    JSON.stringify({
+                      ...privateComments,
+                      [id]: {
+                        ...(privateComments[id] || {}),
+                        flagged: !flagged,
+                      },
+                    })
+                  );
+                }}
+              />
+            }
+            label="Flag for self"
+          />
         </form>
       </div>
       <div className="flex-1">
