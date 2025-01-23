@@ -134,7 +134,7 @@ const Songs: React.FC = () => {
                   .toLowerCase()
                   .includes(search.toLowerCase());
             if (f)
-              f = (privateComments[i]?.comment.toLowerCase() || "").includes(
+              f = (privateComments[i]?.comment?.toLowerCase() || "").includes(
                 filterNote.toLowerCase()
               );
             return f;
