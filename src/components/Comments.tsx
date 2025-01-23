@@ -33,6 +33,7 @@ function Comments({ id }: { id: number }) {
     setText("");
     setPrivateNote(privateComments[id]?.comment || "");
     setFlagged(privateComments[id]?.flagged || false);
+    // eslint-disable-next-line
   }, [id]);
 
   // GLOBAL STATE

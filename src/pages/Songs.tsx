@@ -8,7 +8,6 @@ import {
   Chip,
   FormControl,
   FormControlLabel,
-  InputLabel,
   Switch,
   TextField,
   ToggleButton,
