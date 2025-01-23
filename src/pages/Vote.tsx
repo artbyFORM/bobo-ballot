@@ -202,9 +202,8 @@ const Vote: React.FC = () => {
                     (i) => allVotes[i] === key
                   );
                   return (
-                    <div className="flex flex-col">
+                    <div className="flex flex-col" key={key}>
                       <button
-                        key={`vote-button-${key}`}
                         className={`rounded-full text-4xl size-24 px-5 ${
                           currentVote === key
                             ? "bg-pink-500 text-white"

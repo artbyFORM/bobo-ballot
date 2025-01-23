@@ -24,7 +24,7 @@ const getRound = createAsyncThunk<
         },
       })
     ).data;
-    return { round: id, songs };
+    return { round: id, songs: songs.map((i: string) => Number(i)) };
   } catch (err) {
     return thunkAPI.rejectWithValue("Get song list request failed");
   }
