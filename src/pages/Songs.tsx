@@ -7,7 +7,9 @@ import {
   CardActionArea,
   Chip,
   FormControl,
+  FormControlLabel,
   InputLabel,
+  Switch,
   TextField,
   ToggleButton,
   ToggleButtonGroup,
@@ -20,8 +22,13 @@ const Songs: React.FC = () => {
   // LOCAL STATE
   let [sort, setSort] = useState<string>("order");
   let [search, setSearch] = useState<string>("");
+  let [filterNote, setFilterNote] = useState<string>("");
+  let [filterFlag, setFilterFlag] = useState<boolean>(false);
 
   // GLOBAL STATE
+  const privateComments = JSON.parse(
+    localStorage.getItem("privateComments") || "{}"
+  );
   const songData = useSelector((state: RootState) => state.songs);
   const settings = useSelector((state: RootState) => state.settings);
   const currentRound = useSelector((state: RootState) => state.settings.round);
@@ -83,30 +90,57 @@ const Songs: React.FC = () => {
           </FormControl>
         </div>
       </div>
-      <FormControl fullWidth>
-        <TextField
-          label="Search"
-          className="flex-1 w-full"
-          sx={{ marginBottom: "15px" }}
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
+      <div className="flex gap-10 items-center mb-5">
+        <FormControl fullWidth className="flex-1">
+          <TextField
+            label="Search"
+            className="flex-1 w-full"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </FormControl>
+        <FormControl fullWidth className="flex-1">
+          <TextField
+            label="Search private notes"
+            className="flex-1 w-full"
+            value={filterNote}
+            onChange={(e) => setFilterNote(e.target.value)}
+          />
+        </FormControl>
+        <FormControlLabel
+          control={
+            <Switch
+              checked={filterFlag}
+              onChange={() => setFilterFlag(!filterFlag)}
+            />
+          }
+          label="Songs I've flagged"
         />
-      </FormControl>
+      </div>
       <div>
         {(sort === "order"
           ? songsInRound
           : songsInRound.toSorted(sortingFunctions[sort])
         )
-          ?.filter(
-            (i) =>
-              songData[i]?.metadata?.title
-                .toLowerCase()
-                .includes(search.toLowerCase()) ||
-              songData[i]?.metadata?.artists
-                .toLowerCase()
-                .includes(search.toLowerCase())
-          )
-          .map((i, index) => {
+          ?.filter((i) => {
+            let f = filterFlag
+              ? privateComments[i] && privateComments[i].flagged
+              : true;
+            if (f)
+              f =
+                (songData[i]?.metadata?.title || "")
+                  .toLowerCase()
+                  .includes(search.toLowerCase()) ||
+                (songData[i]?.metadata?.artists || "")
+                  .toLowerCase()
+                  .includes(search.toLowerCase());
+            if (f)
+              f = (privateComments[i]?.comment.toLowerCase() || "").includes(
+                filterNote.toLowerCase()
+              );
+            return f;
+          })
+          .map((i) => {
             let votes = songData[i]?.votesByRound[currentRound];
             return (
               <Link to={"/vote/" + i} key={i}>
