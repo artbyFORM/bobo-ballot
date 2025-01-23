@@ -7,6 +7,8 @@ import {
   CardActionArea,
   Chip,
   FormControl,
+  InputLabel,
+  TextField,
   ToggleButton,
   ToggleButtonGroup,
   Typography,
@@ -17,6 +19,7 @@ import { RootState } from "../state/store";
 const Songs: React.FC = () => {
   // LOCAL STATE
   let [sort, setSort] = useState<string>("order");
+  let [search, setSearch] = useState<string>("");
 
   // GLOBAL STATE
   const songData = useSelector((state: RootState) => state.songs);
@@ -80,94 +83,115 @@ const Songs: React.FC = () => {
           </FormControl>
         </div>
       </div>
+      <FormControl fullWidth>
+        <TextField
+          label="Search"
+          className="flex-1 w-full"
+          sx={{ marginBottom: "15px" }}
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+      </FormControl>
       <div>
         {(sort === "order"
           ? songsInRound
           : songsInRound.toSorted(sortingFunctions[sort])
-        )?.map((i, index) => {
-          let votes = songData[i]?.votesByRound[currentRound];
-          return (
-            <Link to={"/vote/" + i} key={i}>
-              <Card variant="outlined" className="mb-2">
-                <CardActionArea>
-                  {songData[i] && (
-                    <div className="p-4 flex justify-between">
-                      <div className="flex">
-                        <div className="w-16">
-                          <h4 className="text-m font-bold">#{index + 1}</h4>
-                          <small className="text-xs font-bold text-neutral-400">
-                            ID {i}
-                          </small>
-                        </div>
-                        <div>
-                          <h3 className="font-bold">
-                            {songData[i].metadata?.title}
-                            {songData[i].disqualified && (
-                              <Chip
-                                label="Disqualified"
-                                color="error"
-                                size="small"
-                                sx={{ marginLeft: "10px" }}
-                              />
+        )
+          ?.filter(
+            (i) =>
+              songData[i]?.metadata?.title
+                .toLowerCase()
+                .includes(search.toLowerCase()) ||
+              songData[i]?.metadata?.artists
+                .toLowerCase()
+                .includes(search.toLowerCase())
+          )
+          .map((i, index) => {
+            let votes = songData[i]?.votesByRound[currentRound];
+            return (
+              <Link to={"/vote/" + i} key={i}>
+                <Card variant="outlined" className="mb-2">
+                  <CardActionArea>
+                    {songData[i] && (
+                      <div className="p-4 flex justify-between">
+                        <div className="flex">
+                          <div className="w-16">
+                            <h4 className="text-m font-bold">
+                              #{songsInRound.indexOf(i) + 1}
+                            </h4>
+                            <small className="text-xs font-bold text-neutral-400">
+                              ID {i}
+                            </small>
+                          </div>
+                          <div>
+                            <h3 className="font-bold">
+                              {songData[i].metadata?.title}
+                              {songData[i].disqualified && (
+                                <Chip
+                                  label="Disqualified"
+                                  color="error"
+                                  size="small"
+                                  sx={{ marginLeft: "10px" }}
+                                />
+                              )}
+                            </h3>
+                            {settings.showArtistNames && (
+                              <p className="text-sm font-light">
+                                {songData[i].metadata?.artists}
+                              </p>
                             )}
-                          </h3>
-                          {settings.showArtistNames && (
-                            <p className="text-sm font-light">
-                              {songData[i].metadata?.artists}
-                            </p>
+                          </div>
+                        </div>
+                        <div className="flex">
+                          {settings.showOtherVotes && (
+                            <div className="mr-5">
+                              <small className="text-xs font-bold text-neutral-400">
+                                VOTES
+                              </small>
+                              <p className="font-bold">
+                                {Object.keys(votes).length}
+                              </p>
+                            </div>
                           )}
+                          {settings.showOtherVotes && (
+                            <div className="mr-5">
+                              <small className="text-xs font-bold text-neutral-400">
+                                AVERAGE
+                              </small>
+                              <p className="font-bold">
+                                {Object.keys(votes).length > 0
+                                  ? average(i)
+                                  : "N/A"}
+                              </p>
+                            </div>
+                          )}
+                          {settings.showOtherVotes && (
+                            <div className="mr-5">
+                              <small className="text-xs font-bold text-neutral-400">
+                                TOTAL
+                              </small>
+                              <p className="font-bold">{total(i)}</p>
+                            </div>
+                          )}
+                          <div className="mr-5">
+                            <small className="text-xs font-bold text-neutral-400">
+                              YOU
+                            </small>
+                            <Typography
+                              color="primary"
+                              sx={{ fontWeight: "bold" }}
+                            >
+                              {votes[settings.voter_id || ""] || "0"}
+                            </Typography>
+                          </div>
                         </div>
                       </div>
-                      <div className="flex">
-                        {settings.showOtherVotes && (
-                          <div className="mr-5">
-                            <small className="text-xs font-bold text-neutral-400">
-                              VOTES
-                            </small>
-                            <p className="font-bold">
-                              {Object.keys(votes).length}
-                            </p>
-                          </div>
-                        )}
-                        {settings.showOtherVotes && (
-                          <div className="mr-5">
-                            <small className="text-xs font-bold text-neutral-400">
-                              AVERAGE
-                            </small>
-                            <p className="font-bold">
-                              {Object.keys(votes).length > 0
-                                ? average(i)
-                                : "N/A"}
-                            </p>
-                          </div>
-                        )}
-                        {settings.showOtherVotes && (
-                          <div className="mr-5">
-                            <small className="text-xs font-bold text-neutral-400">
-                              TOTAL
-                            </small>
-                            <p className="font-bold">{total(i)}</p>
-                          </div>
-                        )}
-                        <div className="mr-5">
-                          <small className="text-xs font-bold text-neutral-400">
-                            YOU
-                          </small>
-                          <Typography
-                            color="primary"
-                            sx={{ fontWeight: "bold" }}
-                          >
-                            {votes[settings.voter_id || ""] || "0"}
-                          </Typography>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </CardActionArea>
-              </Card>
-            </Link>
-          );
-        })}
+                    )}
+                  </CardActionArea>
+                </Card>
+              </Link>
+            );
+          })}
       </div>
     </div>
   );
