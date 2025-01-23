@@ -27,6 +27,7 @@ function Comments({ id }: { id: number }) {
   // ACTIONS
   const dispatch: AppDispatch = useDispatch();
   const postComment = () => {
+    if (!text) return;
     dispatch(comment({ id, message: text }));
     setText("");
   };
@@ -40,31 +41,40 @@ function Comments({ id }: { id: number }) {
       style={{ marginTop: "50px" }}
     >
       <div className="flex-1">
-        <TextField
-          className="flex-1 w-full"
-          sx={{ marginBottom: "15px" }}
-          multiline
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          onKeyDown={(e) => e.stopPropagation()}
-          placeholder="Write a comment..."
-        />
-        <div className="flex justify-between">
-          <FormControlLabel
-            control={
-              <Switch checked={disqualified} onChange={dispatchDisqualify} />
-            }
-            label="Disqualify song"
+        <form>
+          <TextField
+            className="flex-1 w-full"
+            sx={{ marginBottom: "15px" }}
+            multiline
+            value={text}
+            onKeyDown={(e) => {
+              e.stopPropagation();
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                postComment();
+              }
+            }}
+            onChange={(e) => setText(e.target.value)}
+            placeholder="Write a comment..."
           />
-          <Button
-            variant="contained"
-            color="primary"
-            className="float-right"
-            onClick={postComment}
-          >
-            POST COMMENT
-          </Button>
-        </div>
+          <div className="flex justify-between">
+            <FormControlLabel
+              control={
+                <Switch checked={disqualified} onChange={dispatchDisqualify} />
+              }
+              label="Disqualify song"
+            />
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              className="float-right"
+              onClick={postComment}
+            >
+              POST COMMENT
+            </Button>
+          </div>
+        </form>
       </div>
       <div className="flex-1">
         {comments?.map((i) => (

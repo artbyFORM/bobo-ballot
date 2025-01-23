@@ -45,6 +45,9 @@ const Vote: React.FC = () => {
         ]
       : 0
   );
+  const r1Votes = useSelector(
+    (state: RootState) => state.songs[id]?.votesByRound[1]
+  );
   const allVotes = useSelector(
     (state: RootState) => state.songs[id]?.votesByRound[state.settings.round]
   );
@@ -201,6 +204,10 @@ const Vote: React.FC = () => {
                   let votes = Object.keys(allVotes).filter(
                     (i) => allVotes[i] === key
                   );
+                  console.log(r1Votes);
+                  let r1 = Object.keys(r1Votes).filter(
+                    (i) => r1Votes[i] === key
+                  );
                   return (
                     <div className="flex flex-col" key={key}>
                       <button
@@ -224,6 +231,23 @@ const Vote: React.FC = () => {
                           />
                         </Tooltip>
                       )}
+                      {currentRound === 2 &&
+                        settings.showOtherVotes &&
+                        key <= 3 && (
+                          <Tooltip title={`${r1.join(", ")}`}>
+                            <Chip
+                              className="mt-3 self-center"
+                              sx={{
+                                cursor: "default",
+                                fontWeight: "light",
+                                fontSize: "12px",
+                              }}
+                              label={`${r1.length} vote${
+                                r1.length !== 1 ? "s" : ""
+                              }`}
+                            />
+                          </Tooltip>
+                        )}
                     </div>
                   );
                 })}
