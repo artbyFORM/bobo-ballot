@@ -204,7 +204,6 @@ const Vote: React.FC = () => {
                   let votes = Object.keys(allVotes).filter(
                     (i) => allVotes[i] === key
                   );
-                  console.log(r1Votes);
                   let r1 = Object.keys(r1Votes).filter(
                     (i) => r1Votes[i] === key
                   );
