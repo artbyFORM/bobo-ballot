@@ -157,7 +157,7 @@ function Comments({ id }: { id: number }) {
                 {i.voter_id} •{" "}
                 {format(new Date(i.created_at), "MMM d, h:mm aa")}
               </Typography>
-              <Typography variant="body2" style={{ whiteSpace: "pre" }}>
+              <Typography variant="body2" style={{ whiteSpace: "pre-wrap" }}>
                 {i.message}
               </Typography>
             </CardContent>
