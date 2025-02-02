@@ -125,7 +125,7 @@ export default function Waveform({ url, waveform, duration, volume }) {
 
   useEffect(() => {
     const handleKeyPress = (event) => {
-      if (event.key === " ") {
+      if (event.key === " " || event.key === "0") {
         event.preventDefault();
         handlePlayPause();
       } else if (event.key === "ArrowRight") {

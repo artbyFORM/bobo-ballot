@@ -32,7 +32,7 @@ const Home: React.FC = () => {
           <strong>left and right arrows</strong> skip forward and backward
         </li>
         <li>
-          <strong>spacebar</strong> plays and pauses
+          <strong>spacebar or 0</strong> plays and pauses
         </li>
       </ol>
       <p className="mt-5">
