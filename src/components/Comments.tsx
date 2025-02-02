@@ -87,7 +87,10 @@ function Comments({ id }: { id: number }) {
               variant="contained"
               color="primary"
               className="float-right"
-              onClick={postComment}
+              onClick={(e) => {
+                e.preventDefault();
+                postComment();
+              }}
             >
               POST COMMENT
             </Button>
