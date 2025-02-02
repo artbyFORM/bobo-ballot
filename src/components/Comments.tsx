@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { format } from "date-fns";
 import {
@@ -17,6 +17,7 @@ import { comment, disqualify } from "../state/songs";
 function Comments({ id }: { id: number }) {
   // LOCAL STATE
   const [text, setText] = useState<string>("");
+  const commentField = useRef<HTMLTextAreaElement>(null);
 
   const privateComments = JSON.parse(
     localStorage.getItem("privateComments") || "{}"
@@ -48,6 +49,7 @@ function Comments({ id }: { id: number }) {
     if (!text) return;
     dispatch(comment({ id, message: text }));
     setText("");
+    if (commentField.current) commentField.current.blur();
   };
   const dispatchDisqualify = () => {
     dispatch(disqualify({ id, disqualified: !disqualified }));
@@ -65,6 +67,7 @@ function Comments({ id }: { id: number }) {
             sx={{ marginBottom: "15px" }}
             multiline
             value={text}
+            inputRef={commentField}
             onKeyDown={(e) => {
               e.stopPropagation();
               if (e.key === "Enter" && !e.shiftKey) {
