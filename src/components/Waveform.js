@@ -58,12 +58,10 @@ export default function Waveform({ url, waveform, duration, volume }) {
             if (wavesurfer.current.getCurrentTime() < duration) {
               setCurrentTime(wavesurfer.current.getCurrentTime());
             }
-            // reset the play head to start when it reaches the end
-            if (wavesurfer.current.getCurrentTime() >= duration) {
-              wavesurfer.current.pause();
-              wavesurfer.current.seekTo(0);
-              setCurrentTime(0);
-            }
+          });
+          wavesurfer.current.on("finish", () => {
+            wavesurfer.current.seekTo(0);
+            setCurrentTime(0);
           });
           wavesurfer.current.on("error", (error) => {
             console.error("error loading WaveSurfer:", error);
