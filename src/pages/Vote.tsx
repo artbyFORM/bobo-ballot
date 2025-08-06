@@ -17,6 +17,8 @@ import {
   VolumeDown,
   VolumeUp,
 } from "@mui/icons-material";
+import Snackbar, { SnackbarCloseReason } from "@mui/material/Snackbar";
+import Alert from "@mui/material/Alert";
 
 import { useTheme } from "../ThemeContext";
 import { AppDispatch, RootState } from "../state/store";
@@ -33,6 +35,7 @@ const Vote: React.FC = () => {
 
   // LOCAL STATE
   const [volume, setVolume] = useState<number>(1);
+  const [toast, setToast] = useState<boolean>(false);
   const id = Number(useParams().id);
 
   // GLOBAL STATE
@@ -107,8 +110,25 @@ const Vote: React.FC = () => {
     setVolume(newVolume);
   };
 
+  const handleClose = (
+    event?: React.SyntheticEvent | Event,
+    reason?: SnackbarCloseReason
+  ) => {
+    if (reason !== "clickaway") setToast(false);
+  };
+
   return (
     <div className="p-10">
+      <Snackbar open={toast} autoHideDuration={3000} onClose={handleClose}>
+        <Alert
+          onClose={handleClose}
+          severity="success"
+          variant="filled"
+          sx={{ width: "100%", color: "white" }}
+        >
+          Copied to clipboard!
+        </Alert>
+      </Snackbar>
       <div className="flex justify-between items-center p-15 w-full h-full">
         {songsInRound && (
           <IconButton
@@ -151,6 +171,24 @@ const Vote: React.FC = () => {
                   href={`https://s.wave.ac/form/${songData.waveac}`}
                 >
                   wave.ac
+                </Link>{" "}
+                •{" "}
+                <Link
+                  sx={{ textDecoration: "none" }}
+                  href="#"
+                  onClick={async (e) => {
+                    e.preventDefault();
+                    await navigator.clipboard.writeText(
+                      `[${
+                        settings.showArtistNames ? songData.artists + " - " : ""
+                      }${
+                        songData.title
+                      } (ID ${id})](https://ballot.artbyform.com/vote/${id})`
+                    );
+                    setToast(true);
+                  }}
+                >
+                  share to discord
                 </Link>
               </h1>
               <Box

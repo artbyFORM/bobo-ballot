@@ -49,7 +49,11 @@ const Songs: React.FC = () => {
 
   let total = (id: number) => {
     let votes = songData[id]?.votesByRound[currentRound];
-    return Object.values(votes).reduce((a, b) => a + b, 0);
+    return Number(
+      Object.values(votes)
+        .reduce((a, b) => a + b, 0)
+        .toFixed(3)
+    );
   };
 
   let your = (id: number) =>

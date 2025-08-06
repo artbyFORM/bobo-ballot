@@ -81,6 +81,7 @@ const getBallotData = createAsyncThunk<
         (a: any, b: any) =>
           new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
       )) {
+        if (!vote.voter_id) continue;
         votesByRound[vote.round][vote.voter_id] = Number(vote.vote);
       }
       songs[song.song_id] = {
@@ -100,6 +101,7 @@ const getBallotData = createAsyncThunk<
     }
     return songs;
   } catch (err) {
+    console.error(err);
     return thunkAPI.rejectWithValue("Get vote data request failed");
   }
 });
