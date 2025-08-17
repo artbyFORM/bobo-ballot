@@ -269,6 +269,8 @@ const songsReducer = createReducer(initialState, (builder) => {
     for (let id in action.payload) {
       if (state[id]) {
         state[id].votesByRound = action.payload[id].votesByRound;
+        state[id].comments = action.payload[id].comments;
+        state[id].disqualified = action.payload[id].disqualified;
       } else {
         state[id] = action.payload[id];
       }
