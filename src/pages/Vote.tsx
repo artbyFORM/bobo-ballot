@@ -227,8 +227,8 @@ const Vote: React.FC = () => {
                     average vote:{" "}
                     {Number(
                       (
-                        Object.values(allVotes).reduce((a, b) => a + b, 0) /
-                        Object.values(allVotes).length
+                        Object.values(allVotes as number[]).reduce((a, b) => a + b, 0) /
+                        Object.values(allVotes as number[]).length
                       ).toFixed(3)
                     )}
                   </div>
